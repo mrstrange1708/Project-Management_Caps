@@ -75,7 +75,7 @@ const Projects = () => {
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-2/3 p-2  border border-gray-500 rounded"
+              className="w-2/3 p-2  border border-gray-500 rounded text-black"
             />
             <button
               onClick={() => setShowForm(!showForm)}
@@ -136,7 +136,7 @@ const Projects = () => {
               </div>
 
               <h2 className="text-3xl font-extrabold border-b border-gray-300 pb-2 mt-12">Completed Projects</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2"
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5"
               >
                 {(userdata.projects?.filter(p => p.status === 'completed') || []).length > 0 ? (
                   userdata.projects

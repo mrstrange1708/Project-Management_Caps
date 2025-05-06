@@ -52,7 +52,7 @@ const Sidebar = () => {
             <div className="absolute bottom-full mb-2 w-3/4 p-2 bg-gray-900 text-white rounded-lg shadow-lg border border-gray-700 z-50">
               <button 
                 onClick={() => {
-                  navigete('/login');
+                  navigete('/');
                   logoutUser()
                   setUser({});
                   

@@ -17,7 +17,7 @@ const Navbar = () => {
         tomorrow.setDate(tomorrow.getDate() + 1);
         const formattedTomorrow = tomorrow.toISOString().split('T')[0];
 
-        if (userdata && userdata.projects) {
+        if (userdata && Array.isArray(userdata.projects)) {
             const filteredTasks = userdata.projects.filter(task => task.deadline === formattedTomorrow);
             setUpcomingTasks(filteredTasks);
         }

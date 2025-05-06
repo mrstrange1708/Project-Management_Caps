@@ -11,9 +11,8 @@ const ActivityBar = ({ projects }) => {
 
     const filteredProjects = projects.filter((project) => {
       const start = dayjs(project.start);
-      const end = dayjs(project.end);
       return (
-        (start.isBefore(fourMonthsLater) && end.isAfter(now))
+        (start.isBefore(fourMonthsLater))
 
       );
     });

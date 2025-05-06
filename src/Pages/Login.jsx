@@ -10,94 +10,95 @@ import styled from 'styled-components';
 import BackgroundAnimation from "../services/BackgroundAnimation";
 
 const Login = () => {
-    const { theam } = useContext(TheamContext);
-    const {userdata , setUser } = useContext(userContext);
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
+  const { userdata, setUser } = useContext(userContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
-    async function Submit(e) {
-        e.preventDefault();
+  async function Submit(e) {
+    e.preventDefault();
 
-        try {
-            const userCredential = await loginUser(email, password);
-            setUser(userCredential.user);
-            navigate("/dashboard");
-            toast.success(`Login successful!`);
-        } catch (e) {
-            toast.error("Login Failed");
-            console.error("Login Error: ", e);
-        }
+    try {
+      const userCredential = await loginUser(email, password);
+      setUser(userCredential.user);
+      navigate("/dashboard");
+      setTimeout(() => {
+        toast.success("Login successful!");
+      }, 1000);
+    } catch (e) {
+      toast.error("Login Failed");
+      console.error("Login Error: ", e.message);
     }
-    const handleGoogleLogin = async () => {
-        try {
-            const user = await loginWithGoogle();
-            setUser(user);
-            navigate('/dashboard');
-            toast.success("Login successful!");
-            console.log(userdata)
-        } catch (e) {
-            toast.error(`Google Login Failed: ${e.message}`);
-            console.error("Google Login Error: ", e);
-        }
-    };
-    return (
-        <>
-            <div
-            style={theam ? { color : "#fff" } : { color: "#000" }}
-                className="flex items-center justify-center h-screen bg-cover bg-center">
-                  <div className="absolute inset-0 -z-10">
-        <BackgroundAnimation />
-      </div>
-                <StyledWrapper>
-                    <form className="form" >
-                        <p className="title">Login To our App</p>
-                        <p className="message">Login now and get full access to our app.</p>
-                        <label>
-                            <input
-                                required
-                                placeholder
-                                type="email "
-                                className="input"
-                                id="email"
-                                name="email"
-                                onChange={(e) => setEmail(e.target.value)}
-                                value={email} />
-                            <span>Email</span>
-                        </label>
-                        <label>
-                            <input 
-                            required 
-                            placeholder 
-                            type="password" 
-                            className="input" 
-                            onChange={(e) => setPassword(e.target.value)}
-                            value={password}
-                            name = "password"
-                            id="password"
-                            />
-                            <span>Password</span>
-                        </label>
-                        <button
-                            type="submit"
-                            className="submit"
-                            onClick={Submit}
-                        >
-                            Login
-                        </button>
+  }
+  const handleGoogleLogin = async () => {
+    try {
+      const user = await loginWithGoogle();
+      setUser({ ...userdata, ...user });
+      navigate('/dashboard');
+      setTimeout(() => {
+        toast.success("Login successful!");
+      }, 1000);
+    } catch (e) {
+      toast.error(`Google Login Failed: ${e.message}`);
+      console.error("Google Login Error: ", e);
+    }
+  };
+  return (
+    <>
+      <div
+        className="flex items-center justify-center h-screen bg-cover bg-center">
+        <div className="absolute inset-0 -z-10">
+          <BackgroundAnimation />
+        </div>
+        <StyledWrapper>
+          <form className="form" >
+            <p className="title">Login To our App</p>
+            <p className="message">Login now and get full access to our app.</p>
+            <label>
+              <input
+                required
+                placeholder
+                type="email "
+                className="input"
+                id="email"
+                name="email"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email} />
+              <span>Email</span>
+            </label>
+            <label>
+              <input
+                required
+                placeholder
+                type="password"
+                className="input "
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                name="password"
+                id="password"
+              />
+              <span>Password</span>
+            </label>
+            <button
+              type="submit"
+              className="submit"
+              onClick={Submit}
+            >
+              Login
+            </button>
 
-                        <button
-                            onClick={handleGoogleLogin}
-                            className="w-full py-3 bg-red-500 text-black font-semibold rounded-md hover:bg-red-600 transition duration-300 mt-2"
-                        >
-                            Sign in with Google
-                        </button>
-                            <p className="signin">Don't have an account ? <Link to="/register">Register</Link> </p>
-                    </form>
-                </StyledWrapper>
-            </div>
-        </>
-    )
+            <button
+              onClick={handleGoogleLogin}
+              className="w-full py-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition duration-300 mt-2"
+            >
+              Sign in with Google
+            </button>
+            <p className="signin">Don't have an account ? <Link to="/register">Register</Link> </p>
+          </form>
+        </StyledWrapper>
+      </div>
+    </>
+  )
 }
 const StyledWrapper = styled.div`
   .form {
