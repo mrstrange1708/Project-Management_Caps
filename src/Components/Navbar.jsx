@@ -61,7 +61,7 @@ const Navbar = () => {
                         </div>
                     )}
                 </div>
-                <Link to="/login">
+                <Link to="/">
                     <UserRoundPen  />
                 </Link>
             </div>
