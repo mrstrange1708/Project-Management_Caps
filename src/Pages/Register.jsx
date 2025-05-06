@@ -1,4 +1,4 @@
-import React, { useState , useContext } from 'react'
+import React, { useState  } from 'react'
 import { useNavigate, Link }from 'react-router-dom';
 import { TheamContext } from '../App'
 import { registerUser } from '../services/authService';
@@ -9,7 +9,6 @@ import BackgroundAnimation from "../services/BackgroundAnimation";
 
 
 const Register = () => {
-    const { theam } = useContext(TheamContext);
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
@@ -30,7 +29,6 @@ const Register = () => {
 
     return (
         <div
-          style={theam ? { color : "#fff" } : { color: "#000" }}
             className="flex items-center justify-center h-screen bg-cover bg-center w-full">
               <div className="absolute inset-0 -z-10">
         <BackgroundAnimation />
