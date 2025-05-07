@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { TheamContext, userContext } from '../App';
 import { loginUser, loginWithGoogle } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
-import { useContext  } from 'react';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styled from 'styled-components';
@@ -15,6 +15,10 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  if (userdata) {
+    navigate('/dashboard');
+    return null;
+  }
 
   async function Submit(e) {
     e.preventDefault();

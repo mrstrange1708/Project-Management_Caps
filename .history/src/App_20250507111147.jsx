@@ -45,7 +45,9 @@ function App() {
                 <Navbar />
                 <div className='flex-1 overflow-y-auto'>
                   <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/" element={
+                      userdata && userdata.displayName ? <Navigate to="/dashboard" /> : <Login />
+                    } />
                     <Route path="/register" element={<Register />} />
                     <Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
                     <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />

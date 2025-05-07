@@ -15,6 +15,11 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (userdata) {
+      navigate('/dashboard');
+    }
+  }, [userdata, navigate]);
 
   async function Submit(e) {
     e.preventDefault();

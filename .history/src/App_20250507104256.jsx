@@ -12,11 +12,6 @@ import { ToastContainer } from 'react-toastify';
 export const TheamContext = createContext();
 export const userContext = createContext();
 
-const PrivateRoute = ({ children }) => {
-  const { userdata } = React.useContext(userContext);
-  return userdata && userdata.displayName ? children : <Navigate to="/" />;
-};
-
 function App() {
 
   const [theam, settheam] = useState(true);
@@ -47,9 +42,9 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
-                    <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
-                    <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
+                    <Route path="/calender" element={<Calender />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/dashboard" element={<DashBoard />} />
                   </Routes>
                 </div>
               </div>
