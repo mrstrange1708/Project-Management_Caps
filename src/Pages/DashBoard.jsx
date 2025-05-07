@@ -10,7 +10,6 @@ const Dashboard = () => {
   const { theam } = useContext(TheamContext);
   const { userdata,setUser } = useContext(userContext);
   const textRef = useRef(null);
-  console.log(userdata);
   const fetchSampleProjects = async () => {
     try {
       const response = await fetch("https://dummyjson.com/c/55fe-9f6c-48e3-beb2");

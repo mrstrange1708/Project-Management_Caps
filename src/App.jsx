@@ -14,7 +14,7 @@ export const userContext = createContext();
 
 const PrivateRoute = ({ children }) => {
   const { userdata } = React.useContext(userContext);
-  return userdata && userdata.displayName ? children : <Navigate to="/" />;
+  return userdata ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -58,17 +58,17 @@ function App() {
         </TheamContext.Provider>
       </userContext.Provider>
       <ToastContainer
-          position="top-right" 
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss 
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   )
 }

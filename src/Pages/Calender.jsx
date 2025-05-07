@@ -7,16 +7,16 @@ import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BackgroundAnimation from "../services/BackgroundAnimation";
-import enUS from 'date-fns/locale/en-US';
+import enIN from 'date-fns/locale/en-IN';
 
 const locales = {
-  'en-US': enUS,
+  'en-IN': enIN,
 };
 
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek,
+  startOfWeek: () => startOfWeek(new Date(), { locale: enIN }),
   getDay,
   locales,
 });
@@ -71,7 +71,7 @@ const CalendarPage = () => {
           localizer={localizer}
           events={events}
           defaultView="month"
-          views={['month']}
+          views={['month', 'week', 'day', 'agenda']}
           startAccessor="start"
           endAccessor="end"
           date={currentDate}
