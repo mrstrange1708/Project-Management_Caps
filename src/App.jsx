@@ -14,7 +14,7 @@ export const userContext = createContext();
 
 const PrivateRoute = ({ children }) => {
   const { userdata } = React.useContext(userContext);
-  return userdata && userdata.projects ? children : <Navigate to="/" />;
+  return userdata && userdata.displayName ? children : <Navigate to="/" />;
 };
 
 function App() {
