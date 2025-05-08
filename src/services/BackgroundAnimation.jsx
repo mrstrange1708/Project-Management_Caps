@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, useContext } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";  
+import { loadSlim } from "@tsparticles/slim";
 import { TheamContext } from "../App";
 const BackgroundAnimation = () => {
-    const { theam } = useContext(TheamContext);
+  const { theam } = useContext(TheamContext);
   const [init, setInit] = useState(false);
 
   useEffect(() => {
