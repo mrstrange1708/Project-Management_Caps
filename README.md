@@ -1,12 +1,88 @@
-# React + Vite
+# 🧠 TaskFlow – Project Management Tool
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**TaskFlow** is a React-based project management tool designed to help users track tasks, manage projects, and schedule activities with an intuitive calendar interface. This tool is built with modern web technologies and includes protected routing, persistent user sessions, and a clean dashboard interface.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+* 🔐 **Authentication** (Login & Register)
+* 🧑‍💼 **User Session Persistence** with `localStorage`
+* 📊 **Dashboard** overview of tasks/projects
+* 🗕️ **Calendar View** for scheduling and planning
+* 🗂️ **Projects Page** to manage multiple projects
+* 🎯 **Private Routing** to protect sensitive pages
+* 🌓 **Theme Toggle** via Context API
+* 🌐 **Responsive Layout** using Flexbox
+* 🍞 **Toast Notifications** with `react-toastify`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 👨‍💪 Tech Stack
+
+| Tech               | Purpose                         |
+| ------------------ | ------------------------------- |
+| React              | Frontend framework              |
+| React Router       | Client-side routing             |
+| React Context      | State management (User/Theme)   |
+| Toastify           | User notifications              |
+| Tailwind CSS / CSS | UI styling (depending on setup) |
+
+---
+
+## 🦾 Folder Structure
+
+```
+src/
+├── Components/        # Navbar, Sidebar, etc.
+├── Pages/             # Dashboard, Projects, Calendar, Login, Register
+├── App.jsx            # App setup with Router and Contexts
+├── index.js           # Entry point
+```
+
+---
+
+## 🔄 Routing Overview
+
+```jsx
+<Route path="/" element={<Login />} />
+<Route path="/register" element={<Register />} />
+<Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
+<Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+<Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
+```
+
+---
+
+## 🔐 Private Route Logic
+
+```jsx
+const PrivateRoute = ({ children }) => {
+  const { userdata } = useContext(userContext);
+  return userdata?.displayName ? children : <Navigate to="/" />;
+};
+```
+
+---
+
+## 🛆 Installation
+
+```bash
+https://github.com/mrstrange1708/Project-Management_Caps.git
+cd Project-Management_Caps
+npm i
+npm start
+```
+
+---
+
+## 🤛️ Author
+
+Made with ❤️ by Mr. Strange
+[LinkedIn](https://www.linkedin.com/in/shaik-mohammed-junaid-sami-20885430b/) • [GitHub](https://github.com/mrstranger1708)
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
