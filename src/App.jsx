@@ -19,7 +19,10 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
 
-  const [theam, settheam] = useState(true);
+  const [theam, settheam] = useState(() => {
+    const savedTheam = localStorage.getItem("theam");
+    return savedTheam ? JSON.parse(savedTheam) : true;
+  });
   const [userdata, setUser] = useState(() => {
     const savedUser = localStorage.getItem("userdata");
     return savedUser ? { ...JSON.parse(savedUser), projects: JSON.parse(savedUser).projects || [] } : {
@@ -31,6 +34,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem("userdata", JSON.stringify(userdata));
   }, [userdata]);
+
+  useEffect(() => {
+    localStorage.setItem("theam", JSON.stringify(theam));
+  }, [theam]);
+
   console.log(userdata);
 
 
