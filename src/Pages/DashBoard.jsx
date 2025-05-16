@@ -42,7 +42,7 @@ const Dashboard = () => {
         });
       });
     });
-  }, []);
+  }, [theam]);
 
   const DustText = () => {
     const text = "Task Flow";
