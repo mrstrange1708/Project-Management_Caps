@@ -14,6 +14,7 @@ const Profile = () => {
   useEffect(() => {
     async function getAnalytics() {
       try {
+        
         const projects = await fetchProjects();
         const total = projects.length;
         const completed = projects.filter(p => p.status === 'completed').length;
