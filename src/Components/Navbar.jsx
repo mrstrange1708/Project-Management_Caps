@@ -24,31 +24,29 @@ const Navbar = () => {
     }, [userdata]);
 
     return (
-        <div style={theam ? { backgroundColor: '#000' ,color : '#fff' } : { backgroundColor: '#fff' , color : '#000' }}
-            className='flex justify-between items-center w-full h-[70px] px-6 border-b border-gray-700'
-        >
-            <Link className='text-3xl flex' to='/dashboard'>
-            <img src="/assets/logo.png" alt="logo"  height={60} width={80}
-            className='mr-5 rounded-xl'/>
-            TaskFlow
+        <div style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
+            className='flex justify-between items-center w-full h-[70px] px-6 border-b border-gray-700'>
+            <Link className='flex items-center' to='/dashboard'>
+                <img src="/assets/logo.png" alt="logo"
+                    className='mr-2 rounded-xl h-8 w-10 sm:h-[60px] sm:w-[80px]'
+                />
+                <span className='font-bold text-lg sm:text-3xl'>TaskFlow</span>
             </Link>
-            <p className={`text-xl  md:flex hidden`}>
-                {userdata.displayName && `Welcome, Hello ${userdata.displayName}`}
+            <p className={`text-base sm:text-xl md:flex hidden`}>
+                {userdata && userdata.username ? `Welcome, ${userdata.username}` : ''}
             </p>
             <div className='flex items-center gap-6'>
-                <button onClick={() => {
-                    settheam(!theam);
-                }}>
+                <button onClick={() => settheam(!theam)} className='hidden sm:block'>
                     {theam ? <Moon size={32} className='text-white rounded-full' /> : <Sun size={32} />}
                 </button>
-                <div className="relative">
+                <div className="relative hidden sm:block">
                     <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                         <BellRing />
                     </button>
                     {isDropdownOpen && (
-                        <div 
-                        style={theam ? { backgroundColor: '#000' ,color : '#fff' } : { backgroundColor: '#fff' , color : '#000' }}
-                        className="absolute right-0 mt-2 w-[300px]   border rounded shadow z-50">
+                        <div
+                            style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
+                            className="absolute right-0 mt-2 w-[300px] border rounded shadow z-50">
                             {upcomingTasks.length === 0 ? (
                                 <p className="p-3 text-sm">No upcoming deadlines 🎉</p>
                             ) : (
@@ -61,8 +59,8 @@ const Navbar = () => {
                         </div>
                     )}
                 </div>
-                <Link to="/">
-                    <UserRoundPen  />
+                <Link to="/profile" className='hidden sm:block'>
+                    <UserRoundPen />
                 </Link>
             </div>
         </div>

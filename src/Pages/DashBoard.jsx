@@ -1,31 +1,17 @@
-import React, { useEffect, useContext, useRef } from "react";
+import React, { useEffect, useContext, useRef, useState } from "react";
 import { TheamContext, userContext } from "../App";
 import gsap from "gsap";
 import BackgroundAnimation from "../services/BackgroundAnimation";
 import Card from "../Components/Card";
 import ActivityBar from "../Components/AcivityBar";
+import { fetchProjects } from '../services/projectService';
 
 const Dashboard = () => {
 
   const { theam } = useContext(TheamContext);
-  const { userdata,setUser } = useContext(userContext);
+  const { userdata, setUser } = useContext(userContext);
+  const [projects, setProjects] = useState([]);
   const textRef = useRef(null);
-  const fetchSampleProjects = async () => {
-    try {
-      const response = await fetch("https://dummyjson.com/c/55fe-9f6c-48e3-beb2");
-      const data = await response.json();
-      const newProjects = Array.isArray(data.projects?.projects) ? data.projects.projects : data.projects;
-      setUser(prev => ({
-        ...prev,
-        projects: newProjects
-      }));
-      localStorage.setItem("userdata", JSON.stringify(userdata));
-
-    } catch (error) {
-      console.error("Error fetching sample projects:", error);
-    }
-  }
-
 
   useEffect(() => {
     const letters = textRef.current?.querySelectorAll(".letter") || [];
@@ -56,6 +42,15 @@ const Dashboard = () => {
       </h1>
     );
   };
+
+  useEffect(() => {
+    // Optionally, fetch projects on mount if you want to sync
+    // fetchProjects().then((res) => {
+    //   const data = res.data || res;
+    //   setProjects(data);
+    //   setUser((prev) => ({ ...prev, projects: data }));
+    // });
+  }, []);
 
   return (
     <div
@@ -101,7 +96,11 @@ const Dashboard = () => {
       {(!userdata.projects || userdata.projects.length === 0) && (
         <button
           onClick={() => {
-            fetchSampleProjects();
+            fetchProjects().then((res) => {
+              const data = res.data || res;
+              setProjects(data);
+              setUser((prev) => ({ ...prev, projects: data }));
+            });
           }}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10 ml-0 md:ml-0 lg:-ml-72"
         >

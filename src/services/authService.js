@@ -1,42 +1,32 @@
-import { signOut } from "firebase/auth";
-import { auth, provider } from "../firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { signInWithPopup } from 'firebase/auth';
+// authService.js
 
+const API_URL = 'http://localhost:3001/api/auth'; // Update if backend URL changes
 
+export async function loginUser(email, password) {
+  const response = await fetch(`${API_URL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  if (!response.ok) throw new Error('Login failed');
+  const data = await response.json();
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('userdata', JSON.stringify(data.user));
+  return data;
+}
 
-export const loginUser = (email, password) => {
-  return signInWithEmailAndPassword(auth, email, password);
-};
+export async function registerUser(email, password, username) {
+  const response = await fetch(`${API_URL}/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password, username })
+  });
+  if (!response.ok) throw new Error('Registration failed');
+  const data = await response.json();
+  return data;
+}
 
-
-export const registerUser = async (email, password, username) => {
-
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-
-    await updateProfile(userCredential.user, {
-      displayName: username,
-    });
-  
-    return userCredential; 
-  };
-
-  export const loginWithGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      return user;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  };
-
-
-export const logoutUser = async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
+export function logoutUser() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userdata');
+} 

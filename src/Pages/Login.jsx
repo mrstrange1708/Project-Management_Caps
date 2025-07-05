@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react'
 import { TheamContext, userContext } from '../App';
-import { loginUser, loginWithGoogle } from '../services/authService';
+import { loginUser } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import { useContext  } from 'react';
 import { toast } from 'react-toastify';
@@ -21,7 +21,7 @@ const Login = () => {
 
     try {
       const userCredential = await loginUser(email, password);
-      setUser(userCredential.user);
+      setUser(userCredential.data.user);
       navigate("/dashboard");
       setTimeout(() => {
         toast.success("Login successful!");
@@ -31,19 +31,6 @@ const Login = () => {
       console.error("Login Error: ", e.message);
     }
   }
-  const handleGoogleLogin = async () => {
-    try {
-      const user = await loginWithGoogle();
-      setUser({ ...userdata, ...user });
-      navigate('/dashboard');
-      setTimeout(() => {
-        toast.success("Login successful!");
-      }, 1000);
-    } catch (e) {
-      toast.error(`Google Login Failed: ${e.message}`);
-      console.error("Google Login Error: ", e);
-    }
-  };
   return (
     <>
       <div
@@ -58,8 +45,8 @@ const Login = () => {
             <label>
               <input
                 required
-                placeholder
-                type="email "
+                placeholder="Email"
+                type="email"
                 className="input"
                 id="email"
                 name="email"
@@ -70,7 +57,7 @@ const Login = () => {
             <label>
               <input
                 required
-                placeholder
+                placeholder="Password"
                 type="password"
                 className="input "
                 onChange={(e) => setPassword(e.target.value)}
@@ -86,13 +73,6 @@ const Login = () => {
               onClick={Submit}
             >
               Login
-            </button>
-
-            <button
-              onClick={handleGoogleLogin}
-              className="w-full py-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 transition duration-300 mt-2"
-            >
-              Sign in with Google
             </button>
             <p className="signin">Don't have an account ? <Link to="/register">Register</Link> </p>
           </form>

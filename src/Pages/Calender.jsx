@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { TheamContext , userContext } from '../App';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
 import format from 'date-fns/format';
@@ -8,6 +8,7 @@ import getDay from 'date-fns/getDay';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import BackgroundAnimation from "../services/BackgroundAnimation";
 import enIN from 'date-fns/locale/en-IN';
+import { fetchProjects } from '../services/projectService';
 
 const locales = {
   'en-IN': enIN,
@@ -25,8 +26,13 @@ const CalendarPage = () => {
   const { userdata } = useContext(userContext);
 
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [projects, setProjects] = useState([]);
 
-  const events = userdata?.projects?.map((project, index) => {
+  useEffect(() => {
+    fetchProjects().then(setProjects);
+  }, []);
+
+  const events = projects?.map((project, index) => {
     let bgColor = '#ccc';
 
     if (project.priority === 'Hard') {

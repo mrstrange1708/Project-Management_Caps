@@ -9,12 +9,14 @@ import Login from './Pages/Login';
 import Register from './Pages/Register';
 import Sidebar from './Components/Sidebar';
 import { ToastContainer } from 'react-toastify';
+import Profile from './Pages/Profile';
+
 export const TheamContext = createContext();
 export const userContext = createContext();
 
 const PrivateRoute = ({ children }) => {
   const { userdata } = React.useContext(userContext);
-  return userdata && userdata.displayName ? children : <Navigate to="/" />;
+  return userdata && userdata.username ? children : <Navigate to="/" />;
 };
 
 function App() {
@@ -25,10 +27,16 @@ function App() {
   });
   const [userdata, setUser] = useState(() => {
     const savedUser = localStorage.getItem("userdata");
-    return savedUser ? { ...JSON.parse(savedUser), projects: JSON.parse(savedUser).projects || [] } : {
-      displayName: '',
-      projects: [],
-    };
+    try {
+      if (!savedUser || savedUser === 'undefined') throw new Error();
+      const parsed = JSON.parse(savedUser);
+      return { ...parsed, projects: parsed.projects || [] };
+    } catch {
+      return {
+        displayName: '',
+        projects: [],
+      };
+    }
   });
 
   useEffect(() => {
@@ -58,6 +66,7 @@ function App() {
                     <Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
                     <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
                     <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
+                    <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
                   </Routes>
                 </div>
               </div>

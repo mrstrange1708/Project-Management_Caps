@@ -1,15 +1,17 @@
 import { Plus } from 'lucide-react';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { TheamContext, userContext } from '../App'
 import { v4 as uuidv4 } from 'uuid';
 import Card from '../Components/Card'
 import BackgroundAnimation from "../services/BackgroundAnimation";
+import { fetchProjects, createProject, updateProject, deleteProject } from '../services/projectService';
 
 
 
 const Projects = () => {
   const { theam } = useContext(TheamContext);
   const { userdata, setUser } = useContext(userContext);
+  const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({
     id: uuidv4(),
     title: '',
@@ -25,16 +27,18 @@ const Projects = () => {
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleDelete = (id) => {
-    const updatedProjects = userdata.projects.filter(project => project.id !== id);
-    setUser({ ...userdata, projects: updatedProjects });
+  const handleDelete = async (id) => {
+    await deleteProject(id);
+    const updatedProjects = projects.filter(project => project.id !== id);
+    setProjects(updatedProjects);
+    setUser((prev) => ({ ...prev, projects: updatedProjects }));
   };
 
-  const filteredProjects = userdata.projects?.filter(project =>
+  const filteredProjects = projects?.filter(project =>
     project.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const startDateTime = new Date(`${project.start}T${project.starttime}`).toISOString();
     const endDateTime = new Date(`${project.end}T${project.endtime}`).toISOString();
@@ -42,6 +46,7 @@ const Projects = () => {
       ...userdata,
       projects: [...(userdata.projects || []), { ...project, start: startDateTime, end: endDateTime }]
     };
+    await createProject(project);
     setUser(updatedUser);
     setProject({
       id: "",
@@ -57,6 +62,15 @@ const Projects = () => {
     });
     setShowForm(false);
   };
+
+  useEffect(() => {
+    fetchProjects().then((res) => {
+      // If backend returns { success, data }, use res.data
+      const data = res.data || res;
+      setProjects(data);
+      setUser((prev) => ({ ...prev, projects: data }));
+    });
+  }, []);
 
   return (
     <div
@@ -113,8 +127,8 @@ const Projects = () => {
               <h2 className="text-3xl font-extrabold border-b border-gray-300 pb-2">Current Projects</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 wrap gap-5 "
               >
-                {(userdata.projects?.filter(p => p.status === 'current') || []).length > 0 ? (
-                  userdata.projects
+                {(projects?.filter(p => p.status === 'current') || []).length > 0 ? (
+                  projects
                     .filter(p => p.status === 'current')
                     .map(project => (
                       <Card
@@ -138,8 +152,8 @@ const Projects = () => {
               <h2 className="text-3xl font-extrabold border-b border-gray-300 pb-2 mt-12">Completed Projects</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5"
               >
-                {(userdata.projects?.filter(p => p.status === 'completed') || []).length > 0 ? (
-                  userdata.projects
+                {(projects?.filter(p => p.status === 'completed') || []).length > 0 ? (
+                  projects
                     .filter(p => p.status === 'completed')
                     .map(project => (
                       <Card

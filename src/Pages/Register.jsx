@@ -19,7 +19,7 @@ const Register = () => {
         e.preventDefault();
         try {
             await registerUser(email, password, username);
-            navigate("/login");
+            navigate("/");
             toast.success("Registration Successful");
         } catch (error) {
             console.error("Registration Error:", error.message);
@@ -42,8 +42,9 @@ const Register = () => {
                                 type="text"
                                 id="username"
                                 value={username}
-                                name = 'username'
+                                name='username'
                                 required
+                                placeholder="Username"
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="input" />
                             <span>Username</span>
@@ -51,8 +52,8 @@ const Register = () => {
                     <label>
                         <input
                             required
-                            placeholder
-                            type="email "
+                            placeholder="Email"
+                            type="email"
                             id="email"
                             name="email"
                             value={email}
@@ -61,7 +62,7 @@ const Register = () => {
                         <span>Email</span>
                     </label>
                     <label>
-                        <input required placeholder type="password" className="input" id="password"
+                        <input required placeholder="Password" type="password" className="input" id="password"
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} />
