@@ -3,30 +3,89 @@
 const API_URL = 'http://localhost:3001/api/auth'; // Update if backend URL changes
 
 export async function loginUser(email, password) {
-  const response = await fetch(`${API_URL}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  if (!response.ok) throw new Error('Login failed');
-  const data = await response.json();
-  localStorage.setItem('token', data.token);
-  localStorage.setItem('userdata', JSON.stringify(data.user));
-  return data;
+  try {
+    const response = await fetch(`${API_URL}/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Login failed:', data);
+      throw new Error(data.message || 'Login failed');
+    }
+    
+    if (!data.success || !data.data) {
+      console.error('Invalid response structure:', data);
+      throw new Error('Invalid response from server');
+    }
+    
+    // Store token and user data
+    localStorage.setItem('token', data.data.token);
+    localStorage.setItem('userdata', JSON.stringify(data.data.user));
+    
+    console.log('Login successful:', data.data.user);
+    return data;
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
 }
 
 export async function registerUser(email, password, username) {
-  const response = await fetch(`${API_URL}/signup`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, username })
-  });
-  if (!response.ok) throw new Error('Registration failed');
-  const data = await response.json();
-  return data;
+  try {
+    const response = await fetch(`${API_URL}/signup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, username })
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      console.error('Registration failed:', data);
+      throw new Error(data.message || 'Registration failed');
+    }
+    
+    if (!data.success || !data.data) {
+      console.error('Invalid response structure:', data);
+      throw new Error('Invalid response from server');
+    }
+    
+    // Store token and user data after successful registration
+    localStorage.setItem('token', data.data.token);
+    localStorage.setItem('userdata', JSON.stringify(data.data.user));
+    
+    console.log('Registration successful:', data.data.user);
+    return data;
+  } catch (error) {
+    console.error('Registration error:', error);
+    throw error;
+  }
 }
 
 export function logoutUser() {
   localStorage.removeItem('token');
   localStorage.removeItem('userdata');
+}
+
+export function isAuthenticated() {
+  const token = localStorage.getItem('token');
+  const userdata = localStorage.getItem('userdata');
+  return !!(token && userdata);
+}
+
+export function getToken() {
+  return localStorage.getItem('token');
+}
+
+export function getUserData() {
+  const userdata = localStorage.getItem('userdata');
+  try {
+    return userdata ? JSON.parse(userdata) : null;
+  } catch {
+    return null;
+  }
 } 

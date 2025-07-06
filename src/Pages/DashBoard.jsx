@@ -4,13 +4,14 @@ import gsap from "gsap";
 import BackgroundAnimation from "../services/BackgroundAnimation";
 import Card from "../Components/Card";
 import ActivityBar from "../Components/AcivityBar";
-import { fetchProjects } from '../services/projectService';
+import { fetchProjects, createProject } from '../services/projectService';
 
 const Dashboard = () => {
 
   const { theam } = useContext(TheamContext);
-  const { userdata, setUser } = useContext(userContext);
+  const { userdata } = useContext(userContext);
   const [projects, setProjects] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const textRef = useRef(null);
 
   useEffect(() => {
@@ -44,13 +45,60 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // Optionally, fetch projects on mount if you want to sync
-    // fetchProjects().then((res) => {
-    //   const data = res.data || res;
-    //   setProjects(data);
-    //   setUser((prev) => ({ ...prev, projects: data }));
-    // });
+    // Fetch projects from backend on mount
+    const loadProjects = async () => {
+      try {
+        const response = await fetchProjects();
+        const data = response.data || response;
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    };
+    
+    loadProjects();
   }, []);
+
+  const loadSampleProjects = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch sample data from the API
+      const res = await fetch("https://mocki.io/v1/972ded65-f2d8-4f83-bde6-4ba29350497b");
+      const sampleData = await res.json();
+      
+      // Save each sample project to the database
+      for (const sampleProject of sampleData) {
+        try {
+          // Prepare the project data for backend
+          const projectData = {
+            title: sampleProject.title,
+            description: sampleProject.description,
+            priority: sampleProject.priority,
+            status: sampleProject.status,
+            start: sampleProject.start,
+            starttime: sampleProject.starttime,
+            end: sampleProject.end,
+            endtime: sampleProject.endtime,
+            deadline: sampleProject.deadline
+          };
+          
+          await createProject(projectData);
+        } catch (error) {
+          console.error(`Failed to create sample project ${sampleProject.title}:`, error);
+        }
+      }
+      
+      // Refresh the projects list
+      const response = await fetchProjects();
+      const data = response.data || response;
+      setProjects(data);
+      
+    } catch (err) {
+      console.error('Failed to load sample projects:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div
@@ -68,17 +116,17 @@ const Dashboard = () => {
             : { backgroundColor: "#f4f4f4", color: "#000" }
         }
       >
-        <ActivityBar projects={userdata.projects} />
+        <ActivityBar projects={projects} />
         <div className="mt-10">
           <h2 className="text-lg font-semibold mb-2">Upcoming Deadlines</h2>
           <div className="space-y-2 text-sm">
-            {Array.isArray(userdata.projects) &&
-              userdata.projects
+            {Array.isArray(projects) &&
+              projects
                 .filter((project) => new Date(project.deadline) > new Date())
                 .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
                 .map((project) => (
                   <div
-                    key={project.id}
+                    key={project._id}
                     className="border border-gray-400 rounded-xl p-2 pb-1 shadow-gray-700 mt-5"
                   >
                     <strong>{project.title}</strong>
@@ -93,18 +141,13 @@ const Dashboard = () => {
       </div>
       <DustText />
 
-      {(!userdata.projects || userdata.projects.length === 0) && (
+      {(!projects || projects.length === 0) && (
         <button
-          onClick={() => {
-            fetchProjects().then((res) => {
-              const data = res.data || res;
-              setProjects(data);
-              setUser((prev) => ({ ...prev, projects: data }));
-            });
-          }}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10 ml-0 md:ml-0 lg:-ml-72"
+          onClick={loadSampleProjects}
+          disabled={isLoading}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10 ml-0 md:ml-0 lg:-ml-72 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          See Sample Projects
+          {isLoading ? 'Loading Sample Projects...' : 'Load Sample Projects'}
         </button>
       )}
 
@@ -112,20 +155,21 @@ const Dashboard = () => {
       <div className="flex flex-row flex-wrap gap-20 justify-center items-start mt-20 mr-0 md:mr-0  lg:mr-60 " >
         <div className="flex flex-col gap-6  items-center">
           <h1 className="text-3xl font-bold mb-8 ">Your Today's Events</h1>
-          {Array.isArray(userdata.projects) &&
-            userdata.projects.filter((project) => {
+          {Array.isArray(projects) &&
+            projects.filter((project) => {
               const today = new Date().toISOString().split("T")[0];
               return project.start <= today && project.end >= today;
             }).length ? (
             <div className="flex flex-col gap-6 items-center">
-              {userdata.projects
+              {projects
                 .filter((project) => {
                   const today = new Date().toISOString().split("T")[0];
                   return project.start <= today && project.end >= today;
                 })
                 .map((event) => (
                   <Card
-                    key={event.id}
+                    key={event._id}
+                    id={event._id}
                     title={event.title}
                     description={event.description}
                     status={event.status}
@@ -144,20 +188,21 @@ const Dashboard = () => {
         <div className="flex flex-col gap-6 items-center">
 
           <h1 className="text-3xl font-bold mb-8">Upcoming Events</h1>
-          {Array.isArray(userdata.projects) &&
-            userdata.projects.filter((project) => {
+          {Array.isArray(projects) &&
+            projects.filter((project) => {
               const today = new Date().toISOString().split("T")[0];
               return project.start > today;
             }).length ? (
             <div className="flex flex-col gap-6 items-center">
-              {userdata.projects
+              {projects
                 .filter((project) => {
                   const today = new Date().toISOString().split("T")[0];
                   return project.start > today;
                 })
                 .map((event) => (
                   <Card
-                    key={event.id}
+                    key={event._id}
+                    id={event._id}
                     title={event.title}
                     description={event.description}
                     status={event.status}

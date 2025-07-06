@@ -14,8 +14,8 @@ const Profile = () => {
   useEffect(() => {
     async function getAnalytics() {
       try {
-        
-        const projects = await fetchProjects();
+        const response = await fetchProjects();
+        const projects = response.data || response;
         const total = projects.length;
         const completed = projects.filter(p => p.status === 'completed').length;
         const pending = total - completed;
@@ -24,6 +24,7 @@ const Profile = () => {
         const hard = projects.filter(p => p.priority === 'Hard').length;
         setAnalytics({ total, completed, pending, easy, medium, hard });
       } catch (e) {
+        console.error('Failed to fetch projects for analytics:', e);
         setAnalytics({ total: 0, completed: 0, pending: 0, easy: 0, medium: 0, hard: 0 });
       }
     }
@@ -32,7 +33,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     logoutUser();
-    setUser({});
+    setUser(null);
     navigate('/');
   };
 
@@ -87,12 +88,12 @@ const Profile = () => {
             <div className="font-medium mb-1">Theme</div>
             <div className="flex gap-2">
               <button
-                className={`px-3 py-1 rounded border ${theam ? 'bg-black text-white' : 'bg-white text-black'} font-semibold`}
-                onClick={() => settheam(true)}
-              >Light</button>
-              <button
                 className={`px-3 py-1 rounded border ${!theam ? 'bg-black text-white' : 'bg-white text-black'} font-semibold`}
                 onClick={() => settheam(false)}
+              >Light</button>
+              <button
+                className={`px-3 py-1 rounded border ${theam ? 'bg-black text-white' : 'bg-white text-black'} font-semibold`}
+                onClick={() => settheam(true)}
               >Dark</button>
             </div>
           </div>

@@ -29,7 +29,18 @@ const CalendarPage = () => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    fetchProjects().then(setProjects);
+    const loadProjects = async () => {
+      try {
+        const response = await fetchProjects();
+        // Fix: Handle correct data structure from backend
+        const data = response.data || response;
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch projects for calendar:', error);
+        setProjects([]);
+      }
+    };
+    loadProjects();
   }, []);
 
   const events = projects?.map((project, index) => {

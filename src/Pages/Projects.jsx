@@ -10,7 +10,7 @@ import { fetchProjects, createProject, updateProject, deleteProject } from '../s
 
 const Projects = () => {
   const { theam } = useContext(TheamContext);
-  const { userdata, setUser } = useContext(userContext);
+  const { userdata } = useContext(userContext);
   const [projects, setProjects] = useState([]);
   const [project, setProject] = useState({
     id: uuidv4(),
@@ -25,13 +25,46 @@ const Projects = () => {
     deadline: ''
   });
   const [showForm, setShowForm] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleDelete = async (id) => {
-    await deleteProject(id);
-    const updatedProjects = projects.filter(project => project.id !== id);
-    setProjects(updatedProjects);
-    setUser((prev) => ({ ...prev, projects: updatedProjects }));
+    try {
+      await deleteProject(id);
+      // Refetch projects from backend to ensure consistency
+      const response = await fetchProjects();
+      const data = response.data || response;
+      setProjects(data);
+    } catch (error) {
+      console.error('Failed to delete project:', error);
+      // You might want to show a toast notification here
+    }
+  };
+
+  const handleEdit = (id) => {
+    const projectToEdit = projects.find(p => p._id === id);
+    if (projectToEdit) {
+      // Convert dates back to form format
+      const startDate = new Date(projectToEdit.start).toISOString().split('T')[0];
+      const endDate = new Date(projectToEdit.end).toISOString().split('T')[0];
+      
+      setProject({
+        id: projectToEdit._id,
+        title: projectToEdit.title,
+        description: projectToEdit.description,
+        start: startDate,
+        starttime: projectToEdit.starttime,
+        end: endDate,
+        endtime: projectToEdit.endtime,
+        status: projectToEdit.status,
+        priority: projectToEdit.priority,
+        deadline: projectToEdit.deadline
+      });
+      setEditingId(id);
+      setIsEditing(true);
+      setShowForm(true);
+    }
   };
 
   const filteredProjects = projects?.filter(project =>
@@ -40,16 +73,38 @@ const Projects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Prepare project data for backend
     const startDateTime = new Date(`${project.start}T${project.starttime}`).toISOString();
     const endDateTime = new Date(`${project.end}T${project.endtime}`).toISOString();
-    const updatedUser = {
-      ...userdata,
-      projects: [...(userdata.projects || []), { ...project, start: startDateTime, end: endDateTime }]
+    const payload = {
+      title: project.title,
+      description: project.description,
+      priority: project.priority,
+      status: project.status,
+      start: startDateTime,
+      starttime: project.starttime,
+      end: endDateTime,
+      endtime: project.endtime,
+      deadline: project.deadline // must be YYYY-MM-DD
     };
-    await createProject(project);
-    setUser(updatedUser);
+
+    try {
+      if (isEditing) {
+        // Update existing project
+        await updateProject(editingId, payload);
+      } else {
+        // Create new project
+        await createProject(payload);
+      }
+      
+      // Refetch projects after creation/update
+      const response = await fetchProjects();
+      const data = response.data || response;
+      setProjects(data);
+      
+      // Reset form
     setProject({
-      id: "",
+        id: uuidv4(),
       title: '',
       description: '',
       start: '',
@@ -61,6 +116,11 @@ const Projects = () => {
       deadline: ''
     });
     setShowForm(false);
+      setIsEditing(false);
+      setEditingId(null);
+    } catch (error) {
+      console.error('Failed to save project:', error);
+    }
   };
 
   useEffect(() => {
@@ -68,7 +128,6 @@ const Projects = () => {
       // If backend returns { success, data }, use res.data
       const data = res.data || res;
       setProjects(data);
-      setUser((prev) => ({ ...prev, projects: data }));
     });
   }, []);
 
@@ -105,8 +164,8 @@ const Projects = () => {
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
                   <Card
-                    key={project.id}
-                    id={project.id}
+                    key={project._id}
+                    id={project._id}
                     title={project.title}
                     description={project.description}
                     status={project.status}
@@ -114,7 +173,8 @@ const Projects = () => {
                     end={project.end}
                     priority={project.priority}
                     deadline={project.deadline}
-                    onDelete={() => handleDelete(project.id)}
+                    onDelete={() => handleDelete(project._id)}
+                    onEdit={() => handleEdit(project._id)}
                   />
                 ))
               ) : (
@@ -132,8 +192,8 @@ const Projects = () => {
                     .filter(p => p.status === 'current')
                     .map(project => (
                       <Card
-                        key={project.id}
-                        id={project.id}
+                        key={project._id}
+                        id={project._id}
                         title={project.title}
                         description={project.description}
                         status={project.status}
@@ -141,7 +201,8 @@ const Projects = () => {
                         end={project.end}
                         priority={project.priority}
                         deadline={project.deadline}
-                        onDelete={() => handleDelete(project.id)}
+                        onDelete={() => handleDelete(project._id)}
+                        onEdit={() => handleEdit(project._id)}
                       />
                     ))
                 ) : (
@@ -157,8 +218,8 @@ const Projects = () => {
                     .filter(p => p.status === 'completed')
                     .map(project => (
                       <Card
-                        key={project.id}
-                        id={project.id}
+                        key={project._id}
+                        id={project._id}
                         title={project.title}
                         description={project.description}
                         status={project.status}
@@ -166,7 +227,8 @@ const Projects = () => {
                         end={project.end}
                         priority={project.priority}
                         deadline={project.deadline}
-                        onDelete={() => handleDelete(project.id)}
+                        onDelete={() => handleDelete(project._id)}
+                        onEdit={() => handleEdit(project._id)}
                       />
                     ))
                 ) : (
@@ -178,8 +240,12 @@ const Projects = () => {
         </div>
       }
       {showForm && (
+        <div className="flex flex-col items-center justify-center w-full">
         <form
           onSubmit={handleSubmit} className="flex flex-col gap-3 bg-white p-6 rounded-lg shadow-xl text-black w-1/2">
+            <h2 className="text-2xl font-bold mb-4 text-center">
+              {isEditing ? 'Edit Project' : 'Create New Project'}
+            </h2>
           <label htmlFor="text">Title</label>
           <input
             type="text"
@@ -262,8 +328,39 @@ const Projects = () => {
             required
           />
 
-          <button type="submit" className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Save Project</button>
+            <div className="flex gap-3 mt-4">
+              <button 
+                type="submit" 
+                className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+              >
+                {isEditing ? 'Update Project' : 'Create Project'}
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setShowForm(false);
+                  setIsEditing(false);
+                  setEditingId(null);
+                  setProject({
+                    id: uuidv4(),
+                    title: '',
+                    description: '',
+                    start: '',
+                    starttime: '',
+                    end: '',
+                    endtime: '',
+                    status: '',
+                    priority: '',
+                    deadline: ''
+                  });
+                }}
+                className="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+            </div>
         </form>
+        </div>
       )}
     </div>
   )

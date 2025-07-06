@@ -51,7 +51,7 @@ const Navbar = () => {
                                 <p className="p-3 text-sm">No upcoming deadlines 🎉</p>
                             ) : (
                                 upcomingTasks.map(task => (
-                                    <p className="p-3 text-sm border-b" key={task.id}>
+                                    <p className="p-3 text-sm border-b" key={task._id}>
                                         ⏰ Deadline for <strong>{task.title}</strong> is tomorrow!
                                     </p>
                                 ))

@@ -10,6 +10,7 @@ import Register from './Pages/Register';
 import Sidebar from './Components/Sidebar';
 import { ToastContainer } from 'react-toastify';
 import Profile from './Pages/Profile';
+import { getUserData, isAuthenticated } from './services/authService';
 
 export const TheamContext = createContext();
 export const userContext = createContext();
@@ -25,30 +26,25 @@ function App() {
     const savedTheam = localStorage.getItem("theam");
     return savedTheam ? JSON.parse(savedTheam) : true;
   });
+  
   const [userdata, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("userdata");
-    try {
-      if (!savedUser || savedUser === 'undefined') throw new Error();
-      const parsed = JSON.parse(savedUser);
-      return { ...parsed, projects: parsed.projects || [] };
-    } catch {
+    // Only store basic user info from authentication
+    const user = getUserData();
+    if (user && isAuthenticated()) {
       return {
-        displayName: '',
-        projects: [],
+        id: user.id,
+        email: user.email,
+        username: user.username
       };
     }
+    return null;
   });
-
-  useEffect(() => {
-    localStorage.setItem("userdata", JSON.stringify(userdata));
-  }, [userdata]);
 
   useEffect(() => {
     localStorage.setItem("theam", JSON.stringify(theam));
   }, [theam]);
 
-  console.log(userdata);
-
+  console.log('Current user data:', userdata);
 
   return (
     <>

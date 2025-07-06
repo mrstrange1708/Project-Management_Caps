@@ -18,9 +18,13 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-            await registerUser(email, password, username);
-            navigate("/");
-            toast.success("Registration Successful");
+            const result = await registerUser(email, password, username);
+            if (result.success && result.data) {
+                navigate("/dashboard");
+                toast.success("Registration Successful");
+            } else {
+                toast.error("Registration Failed");
+            }
         } catch (error) {
             console.error("Registration Error:", error.message);
             toast.error("Registration Failed");
@@ -44,7 +48,6 @@ const Register = () => {
                                 value={username}
                                 name='username'
                                 required
-                                placeholder="Username"
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="input" />
                             <span>Username</span>
@@ -52,7 +55,6 @@ const Register = () => {
                     <label>
                         <input
                             required
-                            placeholder="Email"
                             type="email"
                             id="email"
                             name="email"
@@ -62,7 +64,7 @@ const Register = () => {
                         <span>Email</span>
                     </label>
                     <label>
-                        <input required placeholder="Password" type="password" className="input" id="password"
+                        <input required type="password" className="input" id="password"
                             name="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} />

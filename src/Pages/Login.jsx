@@ -21,11 +21,15 @@ const Login = () => {
 
     try {
       const userCredential = await loginUser(email, password);
-      setUser(userCredential.data.user);
-      navigate("/dashboard");
-      setTimeout(() => {
-        toast.success("Login successful!");
-      }, 1000);
+      if (userCredential && userCredential.data && userCredential.data.user) {
+        setUser(userCredential.data.user);
+        navigate("/dashboard");
+        setTimeout(() => {
+          toast.success("Login successful!");
+        }, 1000);
+      } else {
+        toast.error("Login failed: Invalid response from server");
+      }
     } catch (e) {
       toast.error("Login Failed");
       console.error("Login Error: ", e.message);
@@ -45,7 +49,6 @@ const Login = () => {
             <label>
               <input
                 required
-                placeholder="Email"
                 type="email"
                 className="input"
                 id="email"
@@ -57,7 +60,6 @@ const Login = () => {
             <label>
               <input
                 required
-                placeholder="Password"
                 type="password"
                 className="input "
                 onChange={(e) => setPassword(e.target.value)}

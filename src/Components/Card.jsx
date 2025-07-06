@@ -1,15 +1,20 @@
 import React from 'react';
 import styled from 'styled-components';
-import { X } from 'lucide-react';
+import { X, Edit } from 'lucide-react';
 
-const Card = ({ title, description, status, start, end, priority, deadline, onDelete }) => {
+const Card = ({ id, title, description, status, start, end, priority, deadline, onDelete, onEdit }) => {
 
   return (
     <StyledWrapper>
       <div className="notification " data-priority={priority}>
-        <button className="delete-btn" onClick={onDelete}>
-          <X size={16} />
-        </button>
+        <div className="card-actions">
+          <button className="edit-btn" onClick={() => onEdit && onEdit(id)} title="Edit Project">
+            <Edit size={16} />
+          </button>
+          <button className="delete-btn" onClick={() => onDelete && onDelete(id)} title="Delete Project">
+            <X size={16} />
+          </button>
+        </div>
         <div className="notiglow bg-color" />
         <div className="notiborderglow" />
         {title && <div className="notititle">{title}</div>}
@@ -140,18 +145,34 @@ const StyledWrapper = styled.div`
     width: 75%;
   }
 
-  .delete-btn {
+  .card-actions {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 6;
+  }
+
+  .delete-btn {
     background: transparent;
     border: none;
     color: #999;
     cursor: pointer;
-    z-index: 6;
   }
 
   .delete-btn:hover {
+    color: #fff;
+  }
+
+  .edit-btn {
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+  }
+
+  .edit-btn:hover {
     color: #fff;
   }
 `;
