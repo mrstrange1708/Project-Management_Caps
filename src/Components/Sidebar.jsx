@@ -1,13 +1,23 @@
 import React from 'react'
 import { LayoutGrid, CopyPlus, CalendarDays, UserRoundPen } from 'lucide-react';
-import { useContext  } from 'react';
-import { TheamContext } from '../App';
-import { Link } from 'react-router-dom';  
+import { useContext } from 'react';
+import { TheamContext, userContext } from '../App';
+import { Link, useLocation } from 'react-router-dom';
+import { isAuthenticated } from '../services/authService';
 
 const Sidebar = () => {
   const { theam } = useContext(TheamContext);
+  const { userdata } = useContext(userContext);
+  const location = useLocation();
 
+  // Check if user is authenticated and on a protected route
+  const isUserAuthenticated = userdata && userdata.username && isAuthenticated();
+  const isOnAuthPage = location.pathname === '/' || location.pathname === '/register';
 
+  // Don't render sidebar on auth pages
+  if (isOnAuthPage) {
+    return null;
+  }
 
   const sidebar = (
     <div

@@ -20,12 +20,21 @@ function handleUnauthorized() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token');
     localStorage.removeItem('userdata');
-    window.location.href = '/';
+    // Only redirect if not already on login page
+    if (window.location.pathname !== '/') {
+      window.location.href = '/';
+    }
   }
 }
 
 export async function fetchProjects() {
   try {
+    // Check if user is authenticated before making the request
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
     const response = await fetch(`${BASE_URL}/api/projects/`, {
       headers: getAuthHeaders()
     });
@@ -52,6 +61,12 @@ export async function fetchProjects() {
 
 export async function createProject(project) {
   try {
+    // Check if user is authenticated before making the request
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
     console.log('Creating project with payload:', project);
     const response = await fetch(`${BASE_URL}/api/projects/`, {
       method: 'POST',
@@ -81,6 +96,12 @@ export async function createProject(project) {
 
 export async function updateProject(id, updates) {
   try {
+    // Check if user is authenticated before making the request
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
     const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
@@ -107,6 +128,12 @@ export async function updateProject(id, updates) {
 
 export async function deleteProject(id) {
   try {
+    // Check if user is authenticated before making the request
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
     const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
