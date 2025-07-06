@@ -3,7 +3,7 @@ import { BellRing, Moon, Sun, UserRoundPen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { TheamContext } from '../App.jsx';
 import { userContext } from '../App.jsx';
-
+import { fetchProjects } from '../services/projectService';
 
 const Navbar = () => {
     const { theam , settheam } = useContext(TheamContext);
@@ -13,13 +13,27 @@ const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const formattedTomorrow = tomorrow.toISOString().split('T')[0];
+        const loadUpcomingTasks = async () => {
+            try {
+                const response = await fetchProjects();
+                const projects = response.data || response;
+                
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const formattedTomorrow = tomorrow.toISOString().split('T')[0];
 
-        if (userdata && Array.isArray(userdata.projects)) {
-            const filteredTasks = userdata.projects.filter(task => task.deadline === formattedTomorrow);
-            setUpcomingTasks(filteredTasks);
+                if (Array.isArray(projects)) {
+                    const filteredTasks = projects.filter(task => task.deadline === formattedTomorrow);
+                    setUpcomingTasks(filteredTasks);
+                }
+            } catch (error) {
+                console.error('Failed to fetch projects for upcoming tasks:', error);
+                setUpcomingTasks([]);
+            }
+        };
+
+        if (userdata && userdata.username) {
+            loadUpcomingTasks();
         }
     }, [userdata]);
 

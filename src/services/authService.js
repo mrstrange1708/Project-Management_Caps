@@ -1,6 +1,8 @@
 // authService.js
 
-const BASE_URL = import.meta.env.VITE_API_URL;
+import config from '../config.js';
+
+const BASE_URL = config.API_URL;
 
 export async function loginUser(email, password) {
   try {
