@@ -1,6 +1,6 @@
 // projectService.js
 
-const API_URL = 'http://localhost:3001/api/projects'; // Update if backend URL changes
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token');
@@ -24,7 +24,7 @@ function handleUnauthorized() {
 
 export async function fetchProjects() {
   try {
-    const response = await fetch(`${API_URL}/`, {
+    const response = await fetch(`${BASE_URL}/api/projects/`, {
       headers: getAuthHeaders()
     });
     
@@ -51,7 +51,7 @@ export async function fetchProjects() {
 export async function createProject(project) {
   try {
     console.log('Creating project with payload:', project);
-    const response = await fetch(`${API_URL}/`, {
+    const response = await fetch(`${BASE_URL}/api/projects/`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(project)
@@ -79,7 +79,7 @@ export async function createProject(project) {
 
 export async function updateProject(id, updates) {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates)
@@ -105,7 +105,7 @@ export async function updateProject(id, updates) {
 
 export async function deleteProject(id) {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });

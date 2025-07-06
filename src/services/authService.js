@@ -1,10 +1,10 @@
 // authService.js
 
-const API_URL = 'http://localhost:3001/api/auth'; // Update if backend URL changes
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export async function loginUser(email, password) {
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -36,7 +36,7 @@ export async function loginUser(email, password) {
 
 export async function registerUser(email, password, username) {
   try {
-    const response = await fetch(`${API_URL}/signup`, {
+    const response = await fetch(`${BASE_URL}/api/auth/signup`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, username })
