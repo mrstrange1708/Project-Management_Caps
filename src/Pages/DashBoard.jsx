@@ -15,20 +15,29 @@ const Dashboard = () => {
   const textRef = useRef(null);
 
   useEffect(() => {
-    const letters = textRef.current?.querySelectorAll(".letter") || [];
-    letters.forEach((letter) => {
-      letter.addEventListener("mouseenter", () => {
-        gsap.to(letter, {
-          duration: 1,
-          y: -20,
-          opacity: 0,
-          ease: "power2.out",
-          onComplete: () => {
-            gsap.set(letter, { y: 0, opacity: 1 });
-          },
+    const animateLetters = () => {
+      const letters = textRef.current?.querySelectorAll(".letter") || [];
+      letters.forEach((letter) => {
+        letter.addEventListener("mouseenter", () => {
+          gsap.to(letter, {
+            duration: 1,
+            y: -20,
+            opacity: 0,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(letter, { y: 0, opacity: 1 });
+            },
+          });
         });
       });
-    });
+    };
+
+    // Ensure animation only runs when DOM is stable
+    if (textRef.current) {
+      requestAnimationFrame(() => {
+        setTimeout(animateLetters, 50);
+      });
+    }
   }, [theam]);
 
   const DustText = () => {
