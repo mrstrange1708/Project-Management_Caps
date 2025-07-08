@@ -32,7 +32,7 @@ const Dashboard = () => {
       });
     };
 
-    // Ensure animation only runs when DOM is stable
+
     if (textRef.current) {
       requestAnimationFrame(() => {
         setTimeout(animateLetters, 50);
@@ -54,7 +54,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // Fetch projects from backend on mount
+
     const loadProjects = async () => {
       try {
         const response = await fetchProjects();
@@ -71,14 +71,14 @@ const Dashboard = () => {
   const loadSampleProjects = async () => {
     setIsLoading(true);
     try {
-      // Fetch sample data from the API
+
       const res = await fetch("https://mocki.io/v1/972ded65-f2d8-4f83-bde6-4ba29350497b");
       const sampleData = await res.json();
       
-      // Save each sample project to the database
+
       for (const sampleProject of sampleData) {
         try {
-          // Prepare the project data for backend
+
           const projectData = {
             title: sampleProject.title,
             description: sampleProject.description,
@@ -97,7 +97,7 @@ const Dashboard = () => {
         }
       }
       
-      // Refresh the projects list
+
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);

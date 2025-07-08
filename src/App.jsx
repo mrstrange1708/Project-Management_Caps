@@ -28,7 +28,7 @@ function App() {
   });
   
   const [userdata, setUser] = useState(() => {
-    // Only store basic user info from authentication
+
     const user = getUserData();
     if (user && isAuthenticated()) {
       return {
@@ -54,7 +54,7 @@ function App() {
             <div className='flex w-full h-screen'>
               <Sidebar />
               <div className='flex-1 flex flex-col'>
-                <Navbar />
+                <Navbar/>
                 <div className='flex-1 overflow-y-auto'>
                   <Routes>
                     <Route path="/" element={<Login />} />

@@ -15,12 +15,11 @@ function getAuthHeaders() {
   };
 }
 
-// Handle 401 errors by logging out the user
+
 function handleUnauthorized() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token');
     localStorage.removeItem('userdata');
-    // Only redirect if not already on login page
     if (window.location.pathname !== '/') {
       window.location.href = '/';
     }
@@ -29,7 +28,6 @@ function handleUnauthorized() {
 
 export async function fetchProjects() {
   try {
-    // Check if user is authenticated before making the request
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No authentication token found');
@@ -61,7 +59,6 @@ export async function fetchProjects() {
 
 export async function createProject(project) {
   try {
-    // Check if user is authenticated before making the request
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No authentication token found');
@@ -96,7 +93,6 @@ export async function createProject(project) {
 
 export async function updateProject(id, updates) {
   try {
-    // Check if user is authenticated before making the request
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No authentication token found');
@@ -128,7 +124,6 @@ export async function updateProject(id, updates) {
 
 export async function deleteProject(id) {
   try {
-    // Check if user is authenticated before making the request
     const token = localStorage.getItem('token');
     if (!token) {
       throw new Error('No authentication token found');

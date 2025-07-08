@@ -32,20 +32,20 @@ const Projects = () => {
   const handleDelete = async (id) => {
     try {
       await deleteProject(id);
-      // Refetch projects from backend to ensure consistency
+
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
     } catch (error) {
       console.error('Failed to delete project:', error);
-      // You might want to show a toast notification here
+
     }
   };
 
   const handleEdit = (id) => {
     const projectToEdit = projects.find(p => p._id === id);
     if (projectToEdit) {
-      // Convert dates back to form format
+
       const startDate = new Date(projectToEdit.start).toISOString().split('T')[0];
       const endDate = new Date(projectToEdit.end).toISOString().split('T')[0];
       
@@ -73,7 +73,7 @@ const Projects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Prepare project data for backend
+
     const startDateTime = new Date(`${project.start}T${project.starttime}`).toISOString();
     const endDateTime = new Date(`${project.end}T${project.endtime}`).toISOString();
     const payload = {
@@ -85,19 +85,19 @@ const Projects = () => {
       starttime: project.starttime,
       end: endDateTime,
       endtime: project.endtime,
-      deadline: project.deadline // must be YYYY-MM-DD
+      deadline: project.deadline 
     };
 
     try {
       if (isEditing) {
-        // Update existing project
+
         await updateProject(editingId, payload);
       } else {
-        // Create new project
+
         await createProject(payload);
       }
       
-      // Refetch projects after creation/update
+
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
@@ -125,7 +125,7 @@ const Projects = () => {
 
   useEffect(() => {
     fetchProjects().then((res) => {
-      // If backend returns { success, data }, use res.data
+
       const data = res.data || res;
       setProjects(data);
     });

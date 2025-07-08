@@ -32,7 +32,7 @@ const CalendarPage = () => {
     const loadProjects = async () => {
       try {
         const response = await fetchProjects();
-        // Fix: Handle correct data structure from backend
+
         const data = response.data || response;
         setProjects(data);
       } catch (error) {
@@ -73,7 +73,7 @@ const CalendarPage = () => {
       border: 'none',
       padding: '4px',
     };
-    return { style };
+    return { style  };
   };
 
   return (

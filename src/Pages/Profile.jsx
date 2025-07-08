@@ -37,10 +37,9 @@ const Profile = () => {
     navigate('/');
   };
 
-  // Helper for avatar initial
+
   const getInitial = (name) => name ? name[0].toUpperCase() : (userdata.username ? userdata.username[0].toUpperCase() : 'U');
 
-  // Format date
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
@@ -53,7 +52,6 @@ const Profile = () => {
         <BackgroundAnimation />
       </div>
       <div className="w-full max-w-4xl flex flex-col md:flex-row gap-6">
-        {/* Personal Info Card */}
         <div className="flex-1 bg-white rounded-xl shadow p-8 flex flex-col gap-6">
           <div className="flex items-center gap-6">
             <div className="w-20 h-20 rounded-full bg-green-600 flex items-center justify-center text-3xl text-white font-bold">
@@ -81,7 +79,7 @@ const Profile = () => {
             </div>
           </div>
         </div>
-        {/* Settings Card */}
+
         <div className="w-full md:w-72 bg-white rounded-xl shadow p-6 flex flex-col gap-6">
           <div className="font-semibold text-lg flex items-center gap-2 mb-2">⚙️ Settings</div>
           <div>
@@ -114,7 +112,7 @@ const Profile = () => {
           </button>
         </div>
       </div>
-      {/* App Statistics Card */}
+
       <div className="w-full max-w-4xl mt-8">
         <div className="bg-white rounded-xl shadow p-8 grid grid-cols-1 md:grid-cols-6 gap-6">
           <div className="flex flex-col items-center">

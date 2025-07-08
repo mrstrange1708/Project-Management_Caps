@@ -10,11 +10,11 @@ const Sidebar = () => {
   const { userdata } = useContext(userContext);
   const location = useLocation();
 
-  // Check if user is authenticated and on a protected route
+
   const isUserAuthenticated = userdata && userdata.username && isAuthenticated();
   const isOnAuthPage = location.pathname === '/' || location.pathname === '/register';
 
-  // Don't render sidebar on auth pages
+
   if (isOnAuthPage) {
     return null;
   }
@@ -22,7 +22,7 @@ const Sidebar = () => {
   const sidebar = (
     <div
       style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
-      className='h-screen flex flex-col transition-all duration-300 ease-in-out w-[60px] hover:w-[200px] overflow-hidden group border-r border-gray-700 hidden md:flex'
+      className='h-screen flex-col transition-all duration-300 ease-in-out w-[60px] hover:w-[200px] overflow-hidden group border-r border-gray-700 hidden md:flex'
     >
       <div className='flex-grow'>
         <Link className='flex items-center gap-4 p-4 cursor-pointer' to = '/dashboard'>

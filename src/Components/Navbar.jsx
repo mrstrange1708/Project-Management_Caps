@@ -14,13 +14,11 @@ const Navbar = () => {
     const [upcomingTasks, setUpcomingTasks] = useState([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Check if user is authenticated and on a protected route
     const isUserAuthenticated = userdata && userdata.username && isAuthenticated();
     const isOnAuthPage = location.pathname === '/' || location.pathname === '/register';
 
     useEffect(() => {
         const loadUpcomingTasks = async () => {
-            // Only fetch projects if user is authenticated and not on auth pages
             if (!isUserAuthenticated || isOnAuthPage) {
                 setUpcomingTasks([]);
                 return;
@@ -47,7 +45,6 @@ const Navbar = () => {
         loadUpcomingTasks();
     }, [userdata, isUserAuthenticated, isOnAuthPage]);
 
-    // Don't render authenticated features on auth pages
     if (isOnAuthPage) {
         return (
             <div style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}

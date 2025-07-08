@@ -191,7 +191,7 @@ const StyledWrapper = styled.div`
 
   .submit {
     border: none;
-    outline: none;
+    outline: none; 
     background-color: royalblue;
     padding: 10px;
     border-radius: 10px;
