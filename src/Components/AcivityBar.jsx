@@ -29,12 +29,19 @@ const ActivityBar = ({ projects }) => {
       }
     });
 
-    const data = Object.entries(groupedByMonth).map(([month, counts]) => ({
-      month,
-      easy: counts.easy ?? 0,
-      medium: counts.medium ?? 0,
-      hard: counts.hard ?? 0,
-    }));
+    const monthsOrder = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const data = monthsOrder
+      .filter((month) => groupedByMonth[month])
+      .map((month) => ({
+        month,
+        easy: groupedByMonth[month].easy ?? 0,
+        medium: groupedByMonth[month].medium ?? 0,
+        hard: groupedByMonth[month].hard ?? 0,
+      }));
 
     setOptions({
       title: {
