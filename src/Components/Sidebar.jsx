@@ -1,5 +1,5 @@
 import React from 'react'
-import { LayoutGrid, CopyPlus, CalendarDays, UserRoundPen } from 'lucide-react';
+import { LayoutGrid, CopyPlus, CalendarDays, UserRoundPen, Info } from 'lucide-react';
 import { useContext } from 'react';
 import { TheamContext, userContext } from '../App';
 import { Link, useLocation } from 'react-router-dom';
@@ -37,6 +37,10 @@ const Sidebar = () => {
           <div className="text-2xl"><CalendarDays /></div>
           <span className='whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300'>Calendar</span>
         </Link>
+        <Link className='flex items-center gap-4 p-4 cursor-pointer' to = '/about'>
+          <div className="text-2xl"><Info /></div>
+          <span className='whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300'>About</span>
+        </Link>
       </div>
     </div>
   );
@@ -58,9 +62,9 @@ const Sidebar = () => {
         <CalendarDays />
         <span className="text-xs">Calendar</span>
       </Link>
-      <Link to="/profile" className="flex flex-col items-center">
-        <UserRoundPen />
-        <span className="text-xs">Profile</span>
+      <Link to="/about" className="flex flex-col items-center">
+        <Info />
+        <span className="text-xs">About</span>
       </Link>
     </div>
   );

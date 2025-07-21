@@ -11,6 +11,7 @@ import Sidebar from './Components/Sidebar';
 import { ToastContainer } from 'react-toastify';
 import Profile from './Pages/Profile';
 import { getUserData, isAuthenticated } from './services/authService';
+import About from './Pages/About';
 
 export const TheamContext = createContext();
 export const userContext = createContext();
@@ -63,6 +64,7 @@ function App() {
                     <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
                     <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
                     <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+                    <Route path="/about" element={<About />} />
                   </Routes>
                 </div>
               </div>

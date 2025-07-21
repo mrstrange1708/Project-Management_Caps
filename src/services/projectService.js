@@ -1,7 +1,4 @@
-// projectService.js
-
 import config from '../config.js';
-
 const BASE_URL = config.API_URL;
 
 function getAuthHeaders() {
