@@ -48,7 +48,7 @@ const Navbar = () => {
     if (isOnAuthPage) {
         return (
             <div style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
-                className='flex justify-between items-center w-full h-[70px] px-6 border-b border-gray-700'>
+                className='fixed top-0 left-0 w-full h-[70px] px-6 border-b border-gray-700 flex justify-between items-center z-30 md:ml-[60px] md:w-[calc(100%-60px)]'>
                 <Link className='flex items-center' to='/dashboard'>
                     <img src="/assets/logo.png" alt="logo"
                         className='mr-2 rounded-xl h-8 w-10 sm:h-[60px] sm:w-[80px]'
@@ -66,7 +66,7 @@ const Navbar = () => {
 
     return (
         <div style={theam ? { backgroundColor: '#000', color: '#fff' } : { backgroundColor: '#fff', color: '#000' }}
-            className='flex justify-between items-center w-full h-[70px] px-6 border-b border-gray-700'>
+            className='fixed top-0 left-0 w-full h-[70px] px-6 border-b border-gray-700 flex justify-between items-center z-30 md:ml-[60px] md:w-[calc(100%-60px)]'>
             <Link className='flex items-center' to='/dashboard'>
                 <img src="/assets/logo.png" alt="logo"
                     className='mr-2 rounded-xl h-8 w-10 sm:h-[60px] sm:w-[80px]'

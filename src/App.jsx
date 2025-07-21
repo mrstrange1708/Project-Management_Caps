@@ -12,6 +12,7 @@ import { ToastContainer } from 'react-toastify';
 import Profile from './Pages/Profile';
 import { getUserData, isAuthenticated } from './services/authService';
 import About from './Pages/About';
+import Footer from './Components/Footer';
 
 export const TheamContext = createContext();
 export const userContext = createContext();
@@ -52,11 +53,11 @@ function App() {
       <userContext.Provider value={{ userdata, setUser }}>
         <TheamContext.Provider value={{ theam, settheam }}>
           <Router>
-            <div className='flex w-full h-screen'>
+            <div className='flex w-full'>
               <Sidebar />
               <div className='flex-1 flex flex-col'>
                 <Navbar/>
-                <div className='flex-1 overflow-y-auto'>
+                <div className='mt-[70px]'>
                   <Routes>
                     <Route path="/" element={<Login />} />
                     <Route path="/register" element={<Register />} />
@@ -64,9 +65,10 @@ function App() {
                     <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
                     <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
                     <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                    <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
+                    <Route path="/about" element={<About />} />
                   </Routes>
                 </div>
+                <Footer />
               </div>
             </div>
           </Router>

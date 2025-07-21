@@ -1,30 +1,38 @@
-import React from 'react';
-import { Info } from 'lucide-react';
+import React, { useContext } from 'react';
+import { Info, Star, Users, Briefcase, GraduationCap, Zap, ArrowRight } from 'lucide-react';
+import BackgroundAnimation from '../services/BackgroundAnimation';
+import { TheamContext } from '../App';
 
 const features = [
   {
-    icon: <span className="text-xl">🧠</span>,
-    text: 'Smart filtering by priority, status, or date',
+    icon: <span className="text-3xl">🧠</span>,
+    text: 'Smart Filtering',
+    description: 'Filter tasks by priority, status, or date.',
   },
   {
-    icon: <span className="text-xl">🔍</span>,
-    text: 'Advanced search across title and description',
+    icon: <span className="text-3xl">🔍</span>,
+    text: 'Advanced Search',
+    description: 'Quickly find tasks across titles and descriptions.',
   },
   {
-    icon: <span className="text-xl">📅</span>,
-    text: 'Calendar-based deadline tracking',
+    icon: <span className="text-3xl">📅</span>,
+    text: 'Calendar Tracking',
+    description: 'Visualize and manage deadlines on a calendar.',
   },
   {
-    icon: <span className="text-xl">👤</span>,
-    text: '“My TaskFlow” — personal view across projects',
+    icon: <span className="text-3xl">👤</span>,
+    text: '“My TaskFlow” View',
+    description: 'A personal, unified view of tasks across projects.',
   },
   {
-    icon: <span className="text-xl">📊</span>,
-    text: 'Project summaries and performance stats',
+    icon: <span className="text-3xl">📊</span>,
+    text: 'Project Stats',
+    description: 'Get insights with project summaries and performance data.',
   },
   {
-    icon: <span className="text-xl">🌗</span>,
-    text: 'Beautiful dark/light mode support',
+    icon: <span className="text-3xl">🌗</span>,
+    text: 'Dark/Light Mode',
+    description: 'A beautiful and comfortable UI, day or night.',
   },
 ];
 
@@ -43,67 +51,102 @@ const testimonials = [
   },
 ];
 
-const audiences = [
-  'Students tracking assignments and exams',
-  'Professionals handling sprints and teams',
-  'Freelancers managing client projects',
-  'Anyone building better work-life discipline',
-];
-
 const About = () => {
+  const { theam } = useContext(TheamContext);
+
+  const glassCardStyle = `
+    rounded-2xl border p-6 shadow-lg
+    transition-all duration-300 hover:shadow-xl hover:-translate-y-1
+  `;
+  const lightThemeCardStyle = 'border-gray-200/50 bg-white/50 backdrop-blur-md';
+  const darkThemeCardStyle = 'border-gray-700/50 bg-black/30 backdrop-blur-md';
+
+  const cardStyle = `${glassCardStyle} ${theam ? darkThemeCardStyle : lightThemeCardStyle}`;
+
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-start px-4 py-8 md:px-0 animate-fadeIn">
-      <div className="flex flex-col items-center mb-8">
-        <div className="flex items-center gap-2 mb-2">
-          <Info className="text-blue-500" size={32} />
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">About TaskFlow</h1>
-        </div>
-        <p className="text-center max-w-xl text-gray-500 text-lg fade-in">
-          TaskFlow is your intelligent task and project manager, designed to give you complete control and clarity over your work. Whether you're a student managing classes, a professional leading teams, or just someone trying to stay organized — TaskFlow brings everything into focus.
-        </p>
+    <div className={`w-full min-h-screen overflow-y-auto px-4 py-12 sm:px-6 lg:px-8 ${theam ? 'text-gray-200' : 'text-gray-800'}`}>
+      <div className="absolute inset-0 -z-10">
+        <BackgroundAnimation />
       </div>
 
+      <div className="max-w-4xl mx-auto">
 
-      <div className="w-full max-w-3xl mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-center">Key Features</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {features.map((f, i) => (
-            <div key={i} className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 shadow-sm transition-transform duration-300 hover:scale-105 fade-in">
-              <span>{f.icon}</span>
-              <span className="text-base font-medium">{f.text}</span>
+        <header className="text-center mb-20 animate-fadeIn">
+          <div className="inline-flex items-center justify-center bg-blue-500/10 rounded-full p-3 mb-4">
+            <Info className="text-blue-500" size={32} />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            About <span className="text-blue-500">TaskFlow</span>
+          </h1>
+          <p className={`mt-4 text-lg max-w-2xl mx-auto ${theam ? 'text-gray-400' : 'text-gray-600'}`}>
+            Your intelligent task and project manager, designed for complete control and clarity over your work.
+          </p>
+        </header>
+
+
+        <section className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-10">Key Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((f, i) => (
+              <div key={i} className={cardStyle}>
+                <div className="mb-3">{f.icon}</div>
+                <h3 className="font-semibold text-lg mb-1">{f.text}</h3>
+                <p className={`${theam ? 'text-gray-400' : 'text-gray-600'}`}>{f.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+
+        <section className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-10">Who Should Use It</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className={cardStyle}>
+              <div className="flex items-center gap-3 mb-2">
+                <GraduationCap className="text-green-500" />
+                <h3 className="text-xl font-semibold">Students</h3>
+              </div>
+              <p className={`${theam ? 'text-gray-400' : 'text-gray-600'}`}>Tracking assignments, project deadlines, and exam schedules.</p>
             </div>
-          ))}
-        </div>
-      </div>
-
-
-      <div className="w-full max-w-3xl mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-center">What Users Say</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {testimonials.map((t, i) => (
-            <div key={i} className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 flex flex-col items-center fade-in">
-              <p className="italic text-gray-700 dark:text-gray-300 mb-4">“{t.quote}”</p>
-              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">— {t.author}</span>
+            <div className={cardStyle}>
+              <div className="flex items-center gap-3 mb-2">
+                <Briefcase className="text-purple-500" />
+                <h3 className="text-xl font-semibold">Professionals</h3>
+              </div>
+              <p className={`${theam ? 'text-gray-400' : 'text-gray-600'}`}>Handling sprints, team tasks, and project milestones with ease.</p>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className={cardStyle}>
+              <div className="flex items-center gap-3 mb-2">
+                <Users className="text-orange-500" />
+                <h3 className="text-xl font-semibold">Freelancers</h3>
+              </div>
+              <p className={`${theam ? 'text-gray-400' : 'text-gray-600'}`}>Managing multiple client projects and deliverables efficiently.</p>
+            </div>
+            <div className={cardStyle}>
+              <div className="flex items-center gap-3 mb-2">
+                <Zap className="text-red-500" />
+                <h3 className="text-xl font-semibold">Productivity Fans</h3>
+              </div>
+              <p className={`${theam ? 'text-gray-400' : 'text-gray-600'}`}>Anyone looking to build better work-life discipline and focus.</p>
+            </div>
+          </div>
+        </section>
 
 
-      <div className="w-full max-w-2xl mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-center">Who Should Use It</h2>
-        <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
-          {audiences.map((a, i) => (
-            <li key={i}>{a}</li>
-          ))}
-        </ul>
-      </div>
+        <section className="mb-20">
+          <h2 className="text-3xl font-bold text-center mb-10">What Users Say</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((t, i) => (
+              <div key={i} className={`${cardStyle} flex flex-col`}>
+                <Star className="text-yellow-400 mb-4" />
+                <p className={`italic mb-4 flex-grow ${theam ? 'text-gray-300' : 'text-gray-700'}`}>“{t.quote}”</p>
+                <p className="font-semibold text-right">— {t.author}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-
-      <div className="w-full max-w-xl text-center mt-8 fade-in">
-        <h2 className="text-2xl font-bold mb-2">Start Getting Things Done</h2>
-        <p className="mb-4 text-gray-500 dark:text-gray-300">Join hundreds of users boosting their productivity with TaskFlow. Organize, prioritize, and conquer your day — one task at a time.</p>
-        <a href="/register" className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold">Get Started</a>
+        
       </div>
     </div>
   );
