@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../services/authService';
 import { fetchProjects } from '../services/projectService';
 import BackgroundAnimation from "../services/BackgroundAnimation";
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const { userdata, setUser } = useContext(userContext);
@@ -35,6 +36,7 @@ const Profile = () => {
     logoutUser();
     setUser(null);
     navigate('/');
+    toast.info('Logged out successfully!');
   };
 
 

@@ -60,26 +60,25 @@ export async function createProject(project) {
       throw new Error('No authentication token found');
     }
 
-    // Format dates to match backend expectations
-    const formattedProject = {
-      ...project,
-      start: new Date(project.start).toISOString(),
-      end: new Date(project.end).toISOString(),
-      deadline: new Date(project.deadline).toISOString(),
-      // Ensure required fields are present
-      userId: JSON.parse(localStorage.getItem('userdata'))?.id,
-      status: project.status || 'current',
+    // Format deadline as YYYY-MM-DD and only send required fields
+    const payload = {
+      title: project.title,
+      description: project.description,
       priority: project.priority || 'Medium',
-      // Add default values for optional fields if not provided
+      status: project.status || 'current',
+      start: new Date(project.start).toISOString(),
       starttime: project.starttime || '09:00',
-      endtime: project.endtime || '17:00'
+      end: new Date(project.end).toISOString(),
+      endtime: project.endtime || '17:00',
+      deadline: (project.deadline || '').split('T')[0], // YYYY-MM-DD
+      userEmail: project.userEmail
     };
 
-    console.log('Creating project with payload:', formattedProject);
+    console.log('Creating project with payload:', payload);
     const response = await fetch(`${BASE_URL}/api/projects/`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify(formattedProject)
+      body: JSON.stringify(payload)
     });
     
     if (response.status === 401) {
@@ -109,18 +108,24 @@ export async function updateProject(id, updates) {
       throw new Error('No authentication token found');
     }
 
-    // Format dates if they are being updated
-    const formattedUpdates = {
-      ...updates,
-      ...(updates.start && { start: new Date(updates.start).toISOString() }),
-      ...(updates.end && { end: new Date(updates.end).toISOString() }),
-      ...(updates.deadline && { deadline: new Date(updates.deadline).toISOString() })
+    // Format deadline as YYYY-MM-DD and only send required fields
+    const payload = {
+      title: updates.title,
+      description: updates.description,
+      priority: updates.priority || 'Medium',
+      status: updates.status || 'current',
+      start: new Date(updates.start).toISOString(),
+      starttime: updates.starttime || '09:00',
+      end: new Date(updates.end).toISOString(),
+      endtime: updates.endtime || '17:00',
+      deadline: (updates.deadline || '').split('T')[0], // YYYY-MM-DD
+      userEmail: updates.userEmail
     };
 
     const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
-      body: JSON.stringify(formattedUpdates)
+      body: JSON.stringify(payload)
     });
     
     if (response.status === 401) {

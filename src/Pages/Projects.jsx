@@ -1,6 +1,6 @@
 import { Plus, Search, Filter, X, ChevronDown, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
 import React, { useContext, useState, useEffect } from 'react';
-import { TheamContext } from '../App'
+import { TheamContext, userContext } from '../App';
 import { v4 as uuidv4 } from 'uuid';
 import Card from '../Components/Card'
 import BackgroundAnimation from "../services/BackgroundAnimation";
@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 
 const Projects = () => {
   const { theam } = useContext(TheamContext);
+  const { userdata } = useContext(userContext);
   const [projects, setProjects] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -39,9 +40,10 @@ const Projects = () => {
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
+      toast.success('Project deleted successfully!');
     } catch (error) {
       console.error('Failed to delete project:', error);
-
+      toast.error('Failed to delete project!');
     }
   };
 
@@ -85,53 +87,38 @@ const Projects = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Prepare ISO strings for start, end, and deadline
+    const startDateTime = new Date(`${project.start}T${project.starttime}`).toISOString();
+    const endDateTime = new Date(`${project.end}T${project.endtime}`).toISOString();
+    // Ensure deadline is in YYYY-MM-DD format
+    const deadlineDate = project.deadline.includes('T') ? project.deadline.split('T')[0] : project.deadline;
+
+    // Prepare payload for backend
+    const payload = {
+      title: project.title,
+      description: project.description,
+      priority: project.priority,
+      status: project.status,
+      start: startDateTime,
+      starttime: project.starttime,
+      end: endDateTime,
+      endtime: project.endtime,
+      deadline: deadlineDate, // <-- FIXED!
+      userEmail: userdata?.email
+    };
+
     try {
-      // Validate dates
-      const startDate = new Date(`${project.start}T${project.starttime}`);
-      const endDate = new Date(`${project.end}T${project.endtime}`);
-      const deadlineDate = new Date(project.deadline);
-
-      if (endDate < startDate) {
-        toast.error("End date cannot be before start date");
-        return;
-      }
-
-      if (deadlineDate < startDate) {
-        toast.error("Deadline cannot be before start date");
-        return;
-      }
-
-      const userData = JSON.parse(localStorage.getItem('userdata'));
-      if (!userData?.id) {
-        toast.error("User data not found. Please log in again.");
-        return;
-      }
-
-      const payload = {
-        title: project.title,
-        description: project.description,
-        priority: project.priority,
-        status: project.status,
-        start: startDate.toISOString(),
-        starttime: project.starttime,
-        end: endDate.toISOString(),
-        endtime: project.endtime,
-        deadline: deadlineDate.toISOString(),
-        userId: userData.id
-      };
-
       if (isEditing) {
         await updateProject(editingId, payload);
-        toast.success("Project updated successfully!");
+        toast.success('Project updated successfully!');
       } else {
         await createProject(payload);
-        toast.success("Project created successfully!");
+        toast.success('Project created successfully!');
       }
 
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
-      
       // Reset form
       setProject({
         id: uuidv4(),
@@ -150,7 +137,7 @@ const Projects = () => {
       setEditingId(null);
     } catch (error) {
       console.error('Failed to save project:', error);
-      toast.error(error.message || "Failed to save project. Please try again.");
+      toast.error('Failed to save project!');
     }
   };
 

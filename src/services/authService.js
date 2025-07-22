@@ -9,23 +9,33 @@ export async function loginUser(email, password) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    
-    const data = await response.json();
-    
+
+    // Defensive: Only parse JSON if content exists and is valid JSON
+    let data = {};
+    const text = await response.text();
+    try {
+      if (text) {
+        data = JSON.parse(text);
+      }
+    } catch {
+      // If not valid JSON, treat as error
+      throw new Error('Server returned invalid response.');
+    }
+
     if (!response.ok) {
       console.error('Login failed:', data);
       throw new Error(data.message || 'Login failed');
     }
-    
+
     if (!data.success || !data.data) {
       console.error('Invalid response structure:', data);
       throw new Error('Invalid response from server');
     }
-    
+
     // Store token and user data
     localStorage.setItem('token', data.data.token);
     localStorage.setItem('userdata', JSON.stringify(data.data.user));
-    
+
     console.log('Login successful:', data.data.user);
     return data;
   } catch (error) {

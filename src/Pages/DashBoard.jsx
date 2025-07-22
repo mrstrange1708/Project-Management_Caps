@@ -20,8 +20,10 @@ const Dashboard = () => {
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
+      toast.success('Project deleted successfully!');
     } catch (error) {
       console.error('Failed to delete project:', error);
+      toast.error('Failed to delete project!');
     }
   };
 
@@ -33,66 +35,34 @@ const Dashboard = () => {
   const loadSampleProjects = async () => {
     setIsLoading(true);
     try {
-      const now = new Date();
-      const sampleProjects = [
-        {
-          title: "Website Redesign",
-          description: "Complete overhaul of company website with modern UI/UX",
-          priority: "Hard",
-          status: "current",
-          start: now.toISOString(),
-          starttime: "09:00",
-          end: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          endtime: "17:00",
-          deadline: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          userId: JSON.parse(localStorage.getItem('userdata'))?.id
-        },
-        {
-          title: "Mobile App Development",
-          description: "Develop iOS and Android apps for the platform",
-          priority: "Medium",
-          status: "current",
-          start: now.toISOString(),
-          starttime: "10:00",
-          end: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-          endtime: "18:00",
-          deadline: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString(),
-          userId: JSON.parse(localStorage.getItem('userdata'))?.id
-        },
-        {
-          title: "Database Optimization",
-          description: "Optimize database queries and improve performance",
-          priority: "Easy",
-          status: "current",
-          start: now.toISOString(),
-          starttime: "11:00",
-          end: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          endtime: "16:00",
-          deadline: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-          userId: JSON.parse(localStorage.getItem('userdata'))?.id
-        }
-      ];
+      const res = await fetch("https://mocki.io/v1/972ded65-f2d8-4f83-bde6-4ba29350497b");
+      const sampleData = await res.json();
 
-      const userData = JSON.parse(localStorage.getItem('userdata'));
-      if (!userData?.id) {
-        toast.error("User data not found. Please log in again.");
-        return;
-      }
-
-      for (const project of sampleProjects) {
+      for (const sampleProject of sampleData) {
         try {
-          await createProject(project);
+          const projectData = {
+            title: sampleProject.title,
+            description: sampleProject.description,
+            priority: sampleProject.priority,
+            status: sampleProject.status,
+            start: sampleProject.start.$date || sampleProject.start,
+            starttime: sampleProject.starttime,
+            end: sampleProject.end.$date || sampleProject.end,
+            endtime: sampleProject.endtime,
+            deadline: (sampleProject.deadline.$date || sampleProject.deadline).split('T')[0],
+            userEmail: 'junaidsamishaik@gmail.com'
+          };
+
+          await createProject(projectData);
         } catch (error) {
-          console.error(`Failed to create sample project ${project.title}:`, error);
-          toast.error(`Failed to create project: ${project.title}`);
+          console.error(`Failed to create sample project ${sampleProject.title}:`, error);
+          toast.error(`Failed to create project: ${sampleProject.title}`);
         }
       }
 
-      // Refresh projects list
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
-      
       toast.success("Sample projects loaded successfully!");
     } catch (err) {
       console.error('Failed to load sample projects:', err);
@@ -134,9 +104,18 @@ const Dashboard = () => {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
 
+  const handlePomodoroStart = () => {
+    setIsTimerRunning(true);
+    toast.info('Pomodoro timer started!');
+  };
+  const handlePomodoroStop = () => {
+    setIsTimerRunning(false);
+    toast.info('Pomodoro timer stopped!');
+  };
   const resetPomodoro = () => {
     setPomodoroTime(25 * 60);
     setIsTimerRunning(false);
+    toast.info('Pomodoro timer reset!');
   };
 
   const today = new Date().toISOString().split('T')[0];
@@ -188,7 +167,7 @@ const Dashboard = () => {
               <div className="text-6xl font-mono mb-6">{formatTime(pomodoroTime)}</div>
               <div className="flex justify-center gap-4">
                 <button
-                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  onClick={isTimerRunning ? handlePomodoroStop : handlePomodoroStart}
                   className={`w-14 h-14 rounded-full flex items-center justify-center ${isTimerRunning ? 'bg-red-500' : 'bg-blue-500'} hover:opacity-90 transition-opacity`}
                 >
                   {isTimerRunning ? <Pause size={24} /> : <Play size={24} />}
