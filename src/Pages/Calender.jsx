@@ -10,6 +10,7 @@ import BackgroundAnimation from "../services/BackgroundAnimation";
 import enIN from 'date-fns/locale/en-IN';
 import { fetchProjects } from '../services/projectService';
 import { Calendar, Clock, AlertCircle, CheckCircle2, Circle } from 'lucide-react';
+import dayjs from 'dayjs';
 
 const locales = {
   'en-IN': enIN,
@@ -37,6 +38,7 @@ const CalendarPage = () => {
         setProjects(data);
       } catch (error) {
         console.error('Failed to fetch projects for calendar:', error);
+        toast.error('Failed to load projects');
         setProjects([]);
       }
     };
@@ -45,17 +47,20 @@ const CalendarPage = () => {
 
   const priorityConfig = {
     Hard: {
-      color: 'rgb(239 68 68)',
+      color: 'rgba(239, 68, 68, 0.9)',
+      borderColor: 'rgb(239, 68, 68)',
       icon: <AlertCircle className="text-red-500" size={16} />,
       label: 'High Priority'
     },
     Medium: {
-      color: 'rgb(249 115 22)',
+      color: 'rgba(249, 115, 22, 0.9)',
+      borderColor: 'rgb(249, 115, 22)',
       icon: <Circle className="text-orange-500" size={16} />,
       label: 'Medium Priority'
     },
     Easy: {
-      color: 'rgb(34 197 94)',
+      color: 'rgba(34, 197, 94, 0.9)',
+      borderColor: 'rgb(34, 197, 94)',
       icon: <CheckCircle2 className="text-green-500" size={16} />,
       label: 'Low Priority'
     }
@@ -69,29 +74,45 @@ const CalendarPage = () => {
     deadline: new Date(project.deadline),
     description: project.description,
     priority: project.priority,
-    status: project.status
+    status: project.status,
+    resource: priorityConfig[project.priority]
   })) || [];
 
   const eventStyleGetter = (event) => {
-    const priority = event.priority || 'Easy';
-    const config = priorityConfig[priority];
+    const config = event.resource || priorityConfig.Easy;
     
     return {
       style: {
         backgroundColor: config.color,
-        opacity: 0.8,
+        borderLeft: `4px solid ${config.borderColor}`,
+        borderRadius: '4px',
+        opacity: 0.9,
         color: 'white',
-        borderRadius: '6px',
         border: 'none',
-        padding: '4px 8px',
+        display: 'block',
         fontSize: '14px',
-        fontWeight: '500'
+        padding: '4px 8px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease'
       }
     };
   };
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
+  };
+
+  const customDayPropGetter = (date) => {
+    const isToday = dayjs(date).isSame(dayjs(), 'day');
+    return {
+      style: {
+        backgroundColor: isToday ? (theam ? 'rgba(59, 130, 246, 0.1)' : 'rgba(59, 130, 246, 0.05)') : 'transparent',
+        transition: 'background-color 0.2s ease'
+      }
+    };
   };
 
   return (
@@ -101,7 +122,6 @@ const CalendarPage = () => {
       </div>
 
       <div className="max-w-[1600px] mx-auto">
-
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <Calendar size={28} className="text-blue-500" />
@@ -118,7 +138,6 @@ const CalendarPage = () => {
           </div>
         </div>
 
-
         <div className={`rounded-xl ${theam ? 'bg-black/30' : 'bg-white/50'} backdrop-blur-md border ${
           theam ? 'border-gray-700/50' : 'border-gray-200/50'
         } p-6 mb-6 min-h-[700px]`}>
@@ -133,11 +152,12 @@ const CalendarPage = () => {
             onNavigate={(date) => setCurrentDate(date)}
             style={{ height: 650 }}
             eventPropGetter={eventStyleGetter}
+            dayPropGetter={customDayPropGetter}
             onSelectEvent={handleSelectEvent}
             className={theam ? 'calendar-dark' : 'calendar-light'}
+            tooltipAccessor={event => `${event.title} (${event.priority})`}
           />
         </div>
-
 
         {selectedEvent && (
           <div className={`rounded-xl ${theam ? 'bg-black/30' : 'bg-white/50'} backdrop-blur-md border ${
@@ -146,8 +166,8 @@ const CalendarPage = () => {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">{selectedEvent.title}</h2>
               <div className="flex items-center gap-2">
-                {priorityConfig[selectedEvent.priority].icon}
-                <span className="text-sm">{priorityConfig[selectedEvent.priority].label}</span>
+                {selectedEvent.resource.icon}
+                <span className="text-sm">{selectedEvent.resource.label}</span>
               </div>
             </div>
             
@@ -219,6 +239,15 @@ const CalendarPage = () => {
           color: #6b7280;
         }
 
+        .calendar-dark .rbc-event {
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar-dark .rbc-event:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
         .calendar-light .rbc-toolbar button {
           background-color: rgba(255, 255, 255, 0.5);
           border: 1px solid rgba(209, 213, 219, 0.5);
@@ -239,6 +268,15 @@ const CalendarPage = () => {
         
         .calendar-light .rbc-off-range-bg {
           background-color: rgba(243, 244, 246, 0.5);
+        }
+
+        .calendar-light .rbc-event {
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-light .rbc-event:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
       `}</style>
     </div>

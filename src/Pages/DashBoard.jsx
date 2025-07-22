@@ -5,6 +5,7 @@ import { Play, Pause, ChevronRight, Clock, Users, Filter, RotateCcw } from 'luci
 import { fetchProjects, createProject, deleteProject } from '../services/projectService';
 import ActivityBar from "../Components/AcivityBar";
 import Card from "../Components/Card";
+import { toast } from 'react-toastify';
 
 const Dashboard = () => {
   const { theam } = useContext(TheamContext);
@@ -32,34 +33,61 @@ const Dashboard = () => {
   const loadSampleProjects = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch("https://mocki.io/v1/972ded65-f2d8-4f83-bde6-4ba29350497b");
-      const sampleData = await res.json();
+      const sampleProjects = [
+        {
+          title: "Website Redesign",
+          description: "Complete overhaul of company website with modern UI/UX",
+          priority: "High",
+          status: "current",
+          start: new Date().toISOString().split('T')[0],
+          starttime: "09:00",
+          end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          endtime: "17:00",
+          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        {
+          title: "Mobile App Development",
+          description: "Develop iOS and Android apps for the platform",
+          priority: "Medium",
+          status: "current",
+          start: new Date().toISOString().split('T')[0],
+          starttime: "10:00",
+          end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          endtime: "18:00",
+          deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        },
+        {
+          title: "Database Optimization",
+          description: "Optimize database queries and improve performance",
+          priority: "Easy",
+          status: "current",
+          start: new Date().toISOString().split('T')[0],
+          starttime: "11:00",
+          end: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          endtime: "16:00",
+          deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        }
+      ];
 
-      for (const sampleProject of sampleData) {
+      for (const project of sampleProjects) {
         try {
-          const projectData = {
-            title: sampleProject.title,
-            description: sampleProject.description,
-            priority: sampleProject.priority,
-            status: sampleProject.status,
-            start: sampleProject.start,
-            starttime: sampleProject.starttime,
-            end: sampleProject.end,
-            endtime: sampleProject.endtime,
-            deadline: sampleProject.deadline
-          };
-          
-          await createProject(projectData);
+          await createProject(project);
         } catch (error) {
-          console.error(`Failed to create sample project ${sampleProject.title}:`, error);
+          console.error(`Failed to create sample project ${project.title}:`, error);
+          throw error; // Re-throw to handle in outer catch
         }
       }
 
+      // Refresh projects list
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
+      
+      // Show success message
+      toast.success("Sample projects loaded successfully!");
     } catch (err) {
       console.error('Failed to load sample projects:', err);
+      toast.error("Failed to load sample projects. Please try again.");
     } finally {
       setIsLoading(false);
     }
