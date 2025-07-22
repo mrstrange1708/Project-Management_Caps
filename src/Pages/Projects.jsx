@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Card from '../Components/Card'
 import BackgroundAnimation from "../services/BackgroundAnimation";
 import { fetchProjects, createProject, updateProject, deleteProject } from '../services/projectService';
+import { toast } from 'react-toastify';
 
 const Projects = () => {
   const { theam } = useContext(TheamContext);
@@ -84,52 +85,72 @@ const Projects = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const startDateTime = new Date(`${project.start}T${project.starttime}`).toISOString();
-    const endDateTime = new Date(`${project.end}T${project.endtime}`).toISOString();
-    const payload = {
-      title: project.title,
-      description: project.description,
-      priority: project.priority,
-      status: project.status,
-      start: startDateTime,
-      starttime: project.starttime,
-      end: endDateTime,
-      endtime: project.endtime,
-      deadline: project.deadline 
-    };
-
     try {
-      if (isEditing) {
+      // Validate dates
+      const startDate = new Date(`${project.start}T${project.starttime}`);
+      const endDate = new Date(`${project.end}T${project.endtime}`);
+      const deadlineDate = new Date(project.deadline);
 
-        await updateProject(editingId, payload);
-      } else {
-
-        await createProject(payload);
+      if (endDate < startDate) {
+        toast.error("End date cannot be before start date");
+        return;
       }
-      
+
+      if (deadlineDate < startDate) {
+        toast.error("Deadline cannot be before start date");
+        return;
+      }
+
+      const userData = JSON.parse(localStorage.getItem('userdata'));
+      if (!userData?.id) {
+        toast.error("User data not found. Please log in again.");
+        return;
+      }
+
+      const payload = {
+        title: project.title,
+        description: project.description,
+        priority: project.priority,
+        status: project.status,
+        start: startDate.toISOString(),
+        starttime: project.starttime,
+        end: endDate.toISOString(),
+        endtime: project.endtime,
+        deadline: deadlineDate.toISOString(),
+        userId: userData.id
+      };
+
+      if (isEditing) {
+        await updateProject(editingId, payload);
+        toast.success("Project updated successfully!");
+      } else {
+        await createProject(payload);
+        toast.success("Project created successfully!");
+      }
 
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
       
       // Reset form
-    setProject({
+      setProject({
         id: uuidv4(),
-      title: '',
-      description: '',
-      start: '',
-      starttime: '',
-      end: '',
-      endtime: '',
-      status: '',
-      priority: '',
-      deadline: ''
-    });
-    setShowForm(false);
+        title: '',
+        description: '',
+        start: '',
+        starttime: '',
+        end: '',
+        endtime: '',
+        status: '',
+        priority: '',
+        deadline: ''
+      });
+      setShowForm(false);
       setIsEditing(false);
       setEditingId(null);
     } catch (error) {
       console.error('Failed to save project:', error);
+      toast.error(error.message || "Failed to save project. Please try again.");
     }
   };
 

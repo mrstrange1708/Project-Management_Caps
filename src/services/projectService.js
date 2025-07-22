@@ -12,7 +12,6 @@ function getAuthHeaders() {
   };
 }
 
-
 function handleUnauthorized() {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token');
@@ -61,11 +60,26 @@ export async function createProject(project) {
       throw new Error('No authentication token found');
     }
 
-    console.log('Creating project with payload:', project);
+    // Format dates to match backend expectations
+    const formattedProject = {
+      ...project,
+      start: new Date(project.start).toISOString(),
+      end: new Date(project.end).toISOString(),
+      deadline: new Date(project.deadline).toISOString(),
+      // Ensure required fields are present
+      userId: JSON.parse(localStorage.getItem('userdata'))?.id,
+      status: project.status || 'current',
+      priority: project.priority || 'Medium',
+      // Add default values for optional fields if not provided
+      starttime: project.starttime || '09:00',
+      endtime: project.endtime || '17:00'
+    };
+
+    console.log('Creating project with payload:', formattedProject);
     const response = await fetch(`${BASE_URL}/api/projects/`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify(project)
+      body: JSON.stringify(formattedProject)
     });
     
     if (response.status === 401) {
@@ -76,7 +90,7 @@ export async function createProject(project) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Create project failed:', response.status, errorData);
-      throw new Error(`Failed to create project: ${response.status} ${errorData.message || ''}`);
+      throw new Error(`Failed to create project: ${response.status} ${errorData.message || 'Validation error'}`);
     }
     
     const data = await response.json();
@@ -95,10 +109,18 @@ export async function updateProject(id, updates) {
       throw new Error('No authentication token found');
     }
 
+    // Format dates if they are being updated
+    const formattedUpdates = {
+      ...updates,
+      ...(updates.start && { start: new Date(updates.start).toISOString() }),
+      ...(updates.end && { end: new Date(updates.end).toISOString() }),
+      ...(updates.deadline && { deadline: new Date(updates.deadline).toISOString() })
+    };
+
     const response = await fetch(`${BASE_URL}/api/projects/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(formattedUpdates)
     });
     
     if (response.status === 401) {

@@ -33,48 +33,58 @@ const Dashboard = () => {
   const loadSampleProjects = async () => {
     setIsLoading(true);
     try {
+      const now = new Date();
       const sampleProjects = [
         {
           title: "Website Redesign",
           description: "Complete overhaul of company website with modern UI/UX",
-          priority: "High",
+          priority: "Hard",
           status: "current",
-          start: new Date().toISOString().split('T')[0],
+          start: now.toISOString(),
           starttime: "09:00",
-          end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          end: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           endtime: "17:00",
-          deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          deadline: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          userId: JSON.parse(localStorage.getItem('userdata'))?.id
         },
         {
           title: "Mobile App Development",
           description: "Develop iOS and Android apps for the platform",
           priority: "Medium",
           status: "current",
-          start: new Date().toISOString().split('T')[0],
+          start: now.toISOString(),
           starttime: "10:00",
-          end: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          end: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(),
           endtime: "18:00",
-          deadline: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          deadline: new Date(now.getTime() + 21 * 24 * 60 * 60 * 1000).toISOString(),
+          userId: JSON.parse(localStorage.getItem('userdata'))?.id
         },
         {
           title: "Database Optimization",
           description: "Optimize database queries and improve performance",
           priority: "Easy",
           status: "current",
-          start: new Date().toISOString().split('T')[0],
+          start: now.toISOString(),
           starttime: "11:00",
-          end: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          end: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString(),
           endtime: "16:00",
-          deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          deadline: new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+          userId: JSON.parse(localStorage.getItem('userdata'))?.id
         }
       ];
+
+      const userData = JSON.parse(localStorage.getItem('userdata'));
+      if (!userData?.id) {
+        toast.error("User data not found. Please log in again.");
+        return;
+      }
 
       for (const project of sampleProjects) {
         try {
           await createProject(project);
         } catch (error) {
           console.error(`Failed to create sample project ${project.title}:`, error);
-          throw error; // Re-throw to handle in outer catch
+          toast.error(`Failed to create project: ${project.title}`);
         }
       }
 
@@ -83,7 +93,6 @@ const Dashboard = () => {
       const data = response.data || response;
       setProjects(data);
       
-      // Show success message
       toast.success("Sample projects loaded successfully!");
     } catch (err) {
       console.error('Failed to load sample projects:', err);
