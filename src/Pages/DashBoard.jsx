@@ -1,84 +1,42 @@
-import React, { useEffect, useContext, useRef, useState } from "react";
-import { TheamContext, userContext } from "../App";
-import gsap from "gsap";
+import React, { useEffect, useContext, useState } from "react";
+import { TheamContext } from "../App";
 import BackgroundAnimation from "../services/BackgroundAnimation";
-import Card from "../Components/Card";
+import { Play, Pause, ChevronRight, Clock, Users, Filter, RotateCcw } from 'lucide-react';
+import { fetchProjects, createProject, deleteProject } from '../services/projectService';
 import ActivityBar from "../Components/AcivityBar";
-import { fetchProjects, createProject } from '../services/projectService';
+import Card from "../Components/Card";
 
 const Dashboard = () => {
-
   const { theam } = useContext(TheamContext);
-  const { userdata } = useContext(userContext);
   const [projects, setProjects] = useState([]);
+  const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const textRef = useRef(null);
 
-  useEffect(() => {
-    const animateLetters = () => {
-      const letters = textRef.current?.querySelectorAll(".letter") || [];
-      letters.forEach((letter) => {
-        letter.addEventListener("mouseenter", () => {
-          gsap.to(letter, {
-            duration: 1,
-            y: -20,
-            opacity: 0,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(letter, { y: 0, opacity: 1 });
-            },
-          });
-        });
-      });
-    };
-
-
-    if (textRef.current) {
-      requestAnimationFrame(() => {
-        setTimeout(animateLetters, 50);
-      });
+  const handleDelete = async (id) => {
+    try {
+      await deleteProject(id);
+      const response = await fetchProjects();
+      const data = response.data || response;
+      setProjects(data);
+    } catch (error) {
+      console.error('Failed to delete project:', error);
     }
-  }, [theam]);
-
-  const DustText = () => {
-    const text = "Task Flow";
-    return (
-      <h1 className="text-4xl md:text-6xl lg:text-8xl font-bold text-center ml-0 md:ml-0 lg:-ml-72" ref={textRef}>
-        {text.split("").map((char, index) => (
-          <span key={index} className="letter inline-block mx-1 cursor-pointer">
-            {char}
-          </span>
-        ))}
-      </h1>
-    );
   };
 
-  useEffect(() => {
+  const handleEdit = (id) => {
 
-    const loadProjects = async () => {
-      try {
-        const response = await fetchProjects();
-        const data = response.data || response;
-        setProjects(data);
-      } catch (error) {
-        console.error('Failed to fetch projects:', error);
-      }
-    };
-    
-    loadProjects();
-  }, []);
+    window.location.href = `/projects?edit=${id}`;
+  };
 
   const loadSampleProjects = async () => {
     setIsLoading(true);
     try {
-
       const res = await fetch("https://mocki.io/v1/972ded65-f2d8-4f83-bde6-4ba29350497b");
       const sampleData = await res.json();
-      
 
       for (const sampleProject of sampleData) {
         try {
-
           const projectData = {
             title: sampleProject.title,
             description: sampleProject.description,
@@ -96,12 +54,10 @@ const Dashboard = () => {
           console.error(`Failed to create sample project ${sampleProject.title}:`, error);
         }
       }
-      
 
       const response = await fetchProjects();
       const data = response.data || response;
       setProjects(data);
-      
     } catch (err) {
       console.error('Failed to load sample projects:', err);
     } finally {
@@ -109,122 +65,232 @@ const Dashboard = () => {
     }
   };
 
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const response = await fetchProjects();
+        const data = response.data || response;
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    };
+    loadProjects();
+  }, []);
+
+  // Pomodoro Timer functionality
+  useEffect(() => {
+    let interval;
+    if (isTimerRunning && pomodoroTime > 0) {
+      interval = setInterval(() => {
+        setPomodoroTime(prev => prev - 1);
+      }, 1000);
+    } else if (pomodoroTime === 0) {
+      setIsTimerRunning(false);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, pomodoroTime]);
+
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const resetPomodoro = () => {
+    setPomodoroTime(25 * 60);
+    setIsTimerRunning(false);
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+  const todayEvents = projects.filter(project => 
+    project.start <= today && project.end >= today
+  );
+  const upcomingEvents = projects.filter(project => 
+    project.start > today
+  );
+  const upcomingDeadlines = [...projects]
+    .filter(project => new Date(project.deadline) > new Date())
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+    .slice(0, 5); // Show only next 5 deadlines
+
   return (
-    <div
-      style={theam ? { color: "#fff" } : { color: "#000" }}
-      className="relative flex flex-col items-center justify-start min-h-screen p-10 bg-cover bg-center overflow-hidden"
-    >
-      <div className="absolute inset-0 -z-10">
+    <div className={`min-h-screen p-6 ${theam ? 'text-gray-200' : 'text-gray-800'} ml-[70px] md:ml-[80px]`}>
+      <div className="absolute inset-0 -z-10 ml-[70px] md:ml-[80px]">
         <BackgroundAnimation />
       </div>
-      <div
-        className="hidden md:hidden lg:block absolute top-0 right-0 h-full w-70 p-4 shadow-lg z-10 "
-        style={
-          theam
-            ? { backgroundColor: "#1a1a1a", color: "#fff" }
-            : { backgroundColor: "#f4f4f4", color: "#000" }
-        }
-      >
-        <ActivityBar projects={projects} />
-        <div className="mt-10">
-          <h2 className="text-lg font-semibold mb-2">Upcoming Deadlines</h2>
-          <div className="space-y-2 text-sm">
-            {Array.isArray(projects) &&
-              projects
-                .filter((project) => new Date(project.deadline) > new Date())
-                .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-                .map((project) => (
-                  <div
-                    key={project._id}
-                    className="border border-gray-400 rounded-xl p-2 pb-1 shadow-gray-700 mt-5"
-                  >
-                    <strong>{project.title}</strong>
-                    <br />
-                    <span className="text-xs">
-                      Due: {new Date(project.deadline).toLocaleDateString()}
-                    </span>
-                  </div>
-                ))}
-          </div>
-        </div>
-      </div>
-      <DustText />
 
       {(!projects || projects.length === 0) && (
-        <button
-          onClick={loadSampleProjects}
-          disabled={isLoading}
-          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10 ml-0 md:ml-0 lg:-ml-72 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isLoading ? 'Loading Sample Projects...' : 'Load Sample Projects'}
-        </button>
+        <div className="flex justify-center mb-8">
+          <button
+            onClick={loadSampleProjects}
+            disabled={isLoading}
+            className={`bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors ${
+              isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            } shadow-lg hover:shadow-xl transform hover:-translate-y-0.5`}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                <span>Loading Sample Projects...</span>
+              </div>
+            ) : (
+              'Load Sample Projects'
+            )}
+          </button>
+        </div>
       )}
 
+      <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-6">
 
-      <div className="flex flex-row flex-wrap gap-20 justify-center items-start mt-20 mr-0 md:mr-0  lg:mr-60 " >
-        <div className="flex flex-col gap-6  items-center">
-          <h1 className="text-3xl font-bold mb-8 ">Your Today's Events</h1>
-          {Array.isArray(projects) &&
-            projects.filter((project) => {
-              const today = new Date().toISOString().split("T")[0];
-              return project.start <= today && project.end >= today;
-            }).length ? (
-            <div className="flex flex-col gap-6 items-center">
-              {projects
-                .filter((project) => {
-                  const today = new Date().toISOString().split("T")[0];
-                  return project.start <= today && project.end >= today;
-                })
-                .map((event) => (
-                  <Card
-                    key={event._id}
-                    id={event._id}
-                    title={event.title}
-                    description={event.description}
-                    status={event.status}
-                    start={event.start}
-                    end={event.end}
-                    priority={event.priority}
-                    deadline={event.deadline}
-                  />
-                ))}
+        <div className="col-span-12 lg:col-span-3 space-y-6">
+
+          <div className={`rounded-xl p-6 ${theam ? 'bg-black/30' : 'bg-white/50'} backdrop-blur-md border ${theam ? 'border-gray-700/50' : 'border-gray-200/50'}`}>
+            <h2 className="text-xl font-semibold mb-4">Pomodoro Timer</h2>
+            <div className="text-center mb-4">
+              <div className="text-6xl font-mono mb-6">{formatTime(pomodoroTime)}</div>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  className={`w-14 h-14 rounded-full flex items-center justify-center ${isTimerRunning ? 'bg-red-500' : 'bg-blue-500'} hover:opacity-90 transition-opacity`}
+                >
+                  {isTimerRunning ? <Pause size={24} /> : <Play size={24} />}
+                </button>
+                <button
+                  onClick={resetPomodoro}
+                  className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-500 hover:opacity-90 transition-opacity"
+                >
+                  <RotateCcw size={24} />
+                </button>
+              </div>
             </div>
-          ) : (
-            <p>No events found today.</p>
-          )}
+          </div>
+
+
+          <div className={`rounded-xl p-6 ${theam ? 'bg-black/30' : 'bg-white/50'} backdrop-blur-md border ${theam ? 'border-gray-700/50' : 'border-gray-200/50'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Upcoming Deadlines</h2>
+              <div className={`px-3 py-1 rounded-full text-sm ${theam ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                {upcomingDeadlines.length}
+              </div>
+            </div>
+            <div className="space-y-3">
+              {upcomingDeadlines.length > 0 ? (
+                upcomingDeadlines.map((project) => (
+                  <div 
+                    key={project._id}
+                    className={`p-4 rounded-lg ${theam ? 'bg-gray-800/50' : 'bg-gray-100/50'} hover:scale-[1.02] transition-transform`}
+                    onClick={() => handleEdit(project._id)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        project.priority === 'Hard' ? 'bg-red-500' :
+                        project.priority === 'Medium' ? 'bg-orange-500' :
+                        'bg-green-500'
+                      }`} />
+                      <span className="font-medium line-clamp-1">{project.title}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm opacity-70">
+                      <Clock size={14} />
+                      <span>Due: {new Date(project.deadline).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 opacity-70">
+                  No upcoming deadlines
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-6 items-center">
 
-          <h1 className="text-3xl font-bold mb-8">Upcoming Events</h1>
-          {Array.isArray(projects) &&
-            projects.filter((project) => {
-              const today = new Date().toISOString().split("T")[0];
-              return project.start > today;
-            }).length ? (
-            <div className="flex flex-col gap-6 items-center">
-              {projects
-                .filter((project) => {
-                  const today = new Date().toISOString().split("T")[0];
-                  return project.start > today;
-                })
-                .map((event) => (
-                  <Card
-                    key={event._id}
-                    id={event._id}
-                    title={event.title}
-                    description={event.description}
-                    status={event.status}
-                    start={event.start}
-                    end={event.end}
-                    priority={event.priority}
-                    deadline={event.deadline}
-                  />
-                ))}
+        <div className="col-span-12 lg:col-span-6 space-y-8">
+
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold">Today's Events</h2>
+              <div className={`px-3 py-1 rounded-full text-sm ${theam ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                {todayEvents.length}
+              </div>
             </div>
-          ) : (
-            <p>No upcoming events found.</p>
-          )}
+            
+            <div className="grid grid-cols-1 gap-6">
+              {todayEvents.length > 0 ? (
+                todayEvents.map((project) => (
+                  <Card
+                    key={project._id}
+                    id={project._id}
+                    title={project.title}
+                    description={project.description}
+                    status={project.status}
+                    start={project.start}
+                    end={project.end}
+                    priority={project.priority}
+                    deadline={project.deadline}
+                    onDelete={() => handleDelete(project._id)}
+                    onEdit={() => handleEdit(project._id)}
+                  />
+                ))
+              ) : (
+                <div className={`text-center py-8 rounded-xl ${theam ? 'bg-gray-800/30' : 'bg-gray-100/30'}`}>
+                  No events scheduled for today
+                </div>
+              )}
+            </div>
+          </section>
+
+
+          <section>
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-2xl font-bold">Upcoming Events</h2>
+              <div className={`px-3 py-1 rounded-full text-sm ${theam ? 'bg-gray-800' : 'bg-gray-200'}`}>
+                {upcomingEvents.length}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-6">
+              {upcomingEvents.length > 0 ? (
+                upcomingEvents.map((project) => (
+                  <Card
+                    key={project._id}
+                    id={project._id}
+                    title={project.title}
+                    description={project.description}
+                    status={project.status}
+                    start={project.start}
+                    end={project.end}
+                    priority={project.priority}
+                    deadline={project.deadline}
+                    onDelete={() => handleDelete(project._id)}
+                    onEdit={() => handleEdit(project._id)}
+                  />
+                ))
+              ) : (
+                <div className={`text-center py-8 rounded-xl ${theam ? 'bg-gray-800/30' : 'bg-gray-100/30'}`}>
+                  No upcoming events
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+
+
+
+        <div className="col-span-12 lg:col-span-3">
+          <div className={`rounded-xl p-6 ${theam ? 'bg-black/30' : 'bg-white/50'} backdrop-blur-md border ${
+            theam ? 'border-gray-700/50' : 'border-gray-200/50'
+          } h-[500px]`}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Activity</h2>
+              <span className="text-sm text-green-500">+29%</span>
+            </div>
+            <div className="h-[calc(100%-2rem)]">
+              <ActivityBar projects={projects} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

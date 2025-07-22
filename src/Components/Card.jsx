@@ -1,180 +1,132 @@
 import React from 'react';
-import styled from 'styled-components';
-import { X, Edit } from 'lucide-react';
+import { Clock, Calendar, AlertCircle, CheckCircle2, Circle, Trash2, Edit2, ArrowRight } from 'lucide-react';
+import { useContext } from 'react';
+import { TheamContext } from '../App';
 
-const Card = ({ id, title, description, status, start, end, priority, deadline, onDelete, onEdit }) => {
+const Card = ({ 
+  id, 
+  title, 
+  description, 
+  status, 
+  start, 
+  end, 
+  priority, 
+  deadline,
+  onDelete,
+  onEdit 
+}) => {
+  const { theam } = useContext(TheamContext);
+
+  const priorityConfig = {
+    Easy: {
+      icon: <CheckCircle2 className="text-green-500" size={18} />,
+      color: 'bg-green-500',
+      textColor: 'text-green-500'
+    },
+    Medium: {
+      icon: <Circle className="text-orange-500" size={18} />,
+      color: 'bg-orange-500',
+      textColor: 'text-orange-500'
+    },
+    Hard: {
+      icon: <AlertCircle className="text-red-500" size={18} />,
+      color: 'bg-red-500',
+      textColor: 'text-red-500'
+    }
+  };
+
+  const statusColors = {
+    current: 'bg-blue-500',
+    completed: 'bg-green-500'
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
 
   return (
-    <StyledWrapper>
-      <div className="notification " data-priority={priority}>
-        <div className="card-actions">
-          <button className="edit-btn" onClick={() => onEdit && onEdit(id)} title="Edit Project">
-            <Edit size={16} />
-          </button>
-          <button className="delete-btn" onClick={() => onDelete && onDelete(id)} title="Delete Project">
-            <X size={16} />
-          </button>
+    <div 
+      className={`
+        ${theam ? 'bg-gray-800/50' : 'bg-white/50'} 
+        backdrop-blur-md rounded-xl border 
+        ${theam ? 'border-gray-700/50' : 'border-gray-200/50'}
+        transition-all duration-300 hover:-translate-y-1 hover:shadow-xl
+        relative overflow-hidden
+      `}
+    >
+
+      <div className={`absolute top-0 left-0 w-1 h-full ${priorityConfig[priority]?.color}`} />
+
+      <div className="p-6">
+
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            {priorityConfig[priority]?.icon}
+            <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
+          </div>
+          <div className={`px-3 py-1 text-xs rounded-full ${statusColors[status]} text-white`}>
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </div>
         </div>
-        <div className="notiglow bg-color" />
-        <div className="notiborderglow" />
-        {title && <div className="notititle">{title}</div>}
-        <div className="notibody">
-          {description && <div>{description}</div>}
-          {status && <div>Status: {status}</div>}
-          {start && <div>Start: {new Date(start).toLocaleDateString()}</div>}
-          {end && <div>End: {new Date(end).toLocaleDateString()}</div>}
-          {deadline && <div>Deadline: {new Date(deadline).toLocaleDateString()}</div>}
+
+
+        <p className={`text-sm mb-4 line-clamp-2 ${theam ? 'text-gray-400' : 'text-gray-600'}`}>
+          {description}
+        </p>
+
+
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="opacity-50" />
+            <span className={`text-xs ${theam ? 'text-gray-400' : 'text-gray-600'}`}>
+              {formatDate(start)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="opacity-50" />
+            <span className={`text-xs ${theam ? 'text-gray-400' : 'text-gray-600'}`}>
+              {formatDate(deadline)}
+            </span>
+          </div>
+        </div>
+
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t ${theam ? 'border-gray-700/50' : 'border-gray-200/50'}">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onEdit(id)}
+              className={`p-2 rounded-lg transition-colors ${
+                theam 
+                  ? 'hover:bg-gray-700/50' 
+                  : 'hover:bg-gray-100/50'
+              }`}
+            >
+              <Edit2 size={16} className="text-blue-500" />
+            </button>
+            <button
+              onClick={() => onDelete(id)}
+              className={`p-2 rounded-lg transition-colors ${
+                theam 
+                  ? 'hover:bg-gray-700/50' 
+                  : 'hover:bg-gray-100/50'
+              }`}
+            >
+              <Trash2 size={16} className="text-red-500" />
+            </button>
+          </div>
+          
+          <div className={`flex items-center gap-1 text-xs ${priorityConfig[priority]?.textColor}`}>
+            <span className="font-medium">{priority}</span>
+            <ArrowRight size={14} />
+          </div>
         </div>
       </div>
-    </StyledWrapper>
+    </div>
   );
-}
-
-const StyledWrapper = styled.div`
-  .notification {
-    display: flex;
-    flex-direction: column;
-    isolation: isolate;
-    position: relative;
-    width: 18rem;
-    height: 11rem;
-    background: #29292c;
-    border-radius: 1rem;
-    overflow: hidden;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 16px;
-    --gradient: linear-gradient(to bottom, #2eadff, #3d83ff, #7e61ff);
-    --color: #32a6ff
-  }
-
-  .notification:before {
-    position: absolute;
-    content: "";
-    inset: 0.0625rem;
-    border-radius: 0.9375rem;
-    background: #29292c;
-    z-index: 2
-  }
-
-  .notification:after {
-    position: absolute;
-    content: "";
-    width: 0.25rem;
-    inset: 0.65rem auto 0.65rem 0.5rem;
-    border-radius: 0.125rem;
-    background: var(--gradient);
-    transition: transform 300ms ease;
-    z-index: 4;
-  }
-
-  .notification[data-priority='Easy']:after {
-    background: linear-gradient(to bottom, #2ecc71, #27ae60); /* Green */
-  }
-
-  .notification[data-priority='Medium']:after {
-    background: linear-gradient(to bottom, #f39c12, #e67e22); /* Light Orange */
-  }
-
-  .notification[data-priority='Hard']:after {
-    background: linear-gradient(to bottom, #e74c3c, #c0392b); /* Red */
-  }
-
-  .notification:hover:after {
-    transform: translateX(0.15rem)
-  }
-
-  .notititle {
-    color: var(--color);
-    padding: 0.65rem 0.25rem 0.4rem 1.25rem;
-    font-weight: 500;
-    font-size: 1.1rem;
-    transition: transform 300ms ease;
-    z-index: 5;
-  }
-
-  .notification:hover .notititle {
-    transform: translateX(0.15rem)
-  }
-
-  .notibody {
-    color: #99999d;
-    padding: 0 1.25rem;
-    transition: transform 300ms ease;
-    z-index: 5;
-  }
-
-  .notification:hover .notibody {
-    transform: translateX(0.25rem)
-  }
-
-  .notiglow,
-  .notiborderglow {
-    position: absolute;
-    width: 20rem;
-    height: 20rem;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle closest-side at center, white, transparent);
-    opacity: 0;
-    transition: opacity 300ms ease;
-  }
-
-  .notiglow {
-    z-index: 3;
-  }
-
-  .notiborderglow {
-    z-index: 1;
-  }
-
-  .notification:hover .notiglow {
-    opacity: 0.1
-  }
-
-  .notification:hover .notiborderglow {
-    opacity: 0.1
-  }
-
-  .note {
-    color: var(--color);
-    position: fixed;
-    top: 80%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    font-size: 0.9rem;
-    width: 75%;
-  }
-
-  .card-actions {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    display: flex;
-    gap: 0.5rem;
-    z-index: 6;
-  }
-
-  .delete-btn {
-    background: transparent;
-    border: none;
-    color: #999;
-    cursor: pointer;
-  }
-
-  .delete-btn:hover {
-    color: #fff;
-  }
-
-  .edit-btn {
-    background: transparent;
-    border: none;
-    color: #999;
-    cursor: pointer;
-  }
-
-  .edit-btn:hover {
-    color: #fff;
-  }
-`;
+};
 
 export default Card;
