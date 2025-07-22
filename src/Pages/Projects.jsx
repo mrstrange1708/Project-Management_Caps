@@ -150,7 +150,7 @@ const Projects = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen p-6 ${theam ? 'text-gray-200' : 'text-gray-800'} ml-[70px] md:ml-[80px]`}>
+    <div className={`min-h-screen p-6 ${theam ? 'text-gray-200' : 'text-gray-800'} md:ml-[80px] ml-0`}>
       <div className="absolute inset-0 -z-10 ml-[70px] md:ml-[80px]">
         <BackgroundAnimation />
       </div>

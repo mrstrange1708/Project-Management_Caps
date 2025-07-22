@@ -10,7 +10,6 @@ export async function loginUser(email, password) {
       body: JSON.stringify({ email, password })
     });
 
-    // Defensive: Only parse JSON if content exists and is valid JSON
     let data = {};
     const text = await response.text();
     try {
@@ -18,7 +17,6 @@ export async function loginUser(email, password) {
         data = JSON.parse(text);
       }
     } catch {
-      // If not valid JSON, treat as error
       throw new Error('Server returned invalid response.');
     }
 
@@ -32,7 +30,6 @@ export async function loginUser(email, password) {
       throw new Error('Invalid response from server');
     }
 
-    // Store token and user data
     localStorage.setItem('token', data.data.token);
     localStorage.setItem('userdata', JSON.stringify(data.data.user));
 
@@ -63,8 +60,7 @@ export async function registerUser(email, password, username) {
       console.error('Invalid response structure:', data);
       throw new Error('Invalid response from server');
     }
-    
-    // Store token and user data after successful registration
+      
     localStorage.setItem('token', data.data.token);
     localStorage.setItem('userdata', JSON.stringify(data.data.user));
     

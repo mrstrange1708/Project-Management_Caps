@@ -60,7 +60,6 @@ export async function createProject(project) {
       throw new Error('No authentication token found');
     }
 
-    // Format deadline as YYYY-MM-DD and only send required fields
     const payload = {
       title: project.title,
       description: project.description,
@@ -70,7 +69,7 @@ export async function createProject(project) {
       starttime: project.starttime || '09:00',
       end: new Date(project.end).toISOString(),
       endtime: project.endtime || '17:00',
-      deadline: (project.deadline || '').split('T')[0], // YYYY-MM-DD
+      deadline: (project.deadline || '').split('T')[0], 
       userEmail: project.userEmail
     };
 
@@ -108,7 +107,6 @@ export async function updateProject(id, updates) {
       throw new Error('No authentication token found');
     }
 
-    // Format deadline as YYYY-MM-DD and only send required fields
     const payload = {
       title: updates.title,
       description: updates.description,
@@ -118,7 +116,7 @@ export async function updateProject(id, updates) {
       starttime: updates.starttime || '09:00',
       end: new Date(updates.end).toISOString(),
       endtime: updates.endtime || '17:00',
-      deadline: (updates.deadline || '').split('T')[0], // YYYY-MM-DD
+      deadline: (updates.deadline || '').split('T')[0], 
       userEmail: updates.userEmail
     };
 

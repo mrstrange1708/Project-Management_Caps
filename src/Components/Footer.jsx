@@ -18,7 +18,7 @@ const Footer = () => {
         <footer className={footerStyle}>
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
                 
-                {/* Brand and Socials */}
+
                 <div className="md:col-span-1">
                     <h3 className="text-2xl font-bold mb-2">TaskFlow</h3>
                     <p className={`text-sm mb-4 ${theam ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -31,7 +31,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Quick Links */}
+
                 <div>
                     <h4 className="font-semibold mb-3">Quick Links</h4>
                     <ul className="space-y-2">
@@ -42,7 +42,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* Legal */}
+
                 <div>
                     <h4 className="font-semibold mb-3">Legal</h4>
                     <ul className="space-y-2">
@@ -51,7 +51,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* Newsletter */}
+
                 <div>
                     <h4 className="font-semibold mb-3">Join Our Newsletter</h4>
                     <p className={`text-sm mb-3 ${theam ? 'text-gray-400' : 'text-gray-600'}`}>

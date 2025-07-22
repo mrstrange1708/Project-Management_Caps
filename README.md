@@ -7,7 +7,7 @@
 ## 🚀 Features
 
 * 🔐 **Authentication** (Login & Register)
-* 🧑‍💼 **User Session Persistence** with `localStorage`
+* 🧑‍💼 **User Session Persistence** with `Database`
 * 📊 **Dashboard** overview of tasks/projects
 * 🗕️ **Calendar View** for scheduling and planning
 * 🗂️ **Projects Page** to manage multiple projects
@@ -46,10 +46,12 @@ src/
 
 ```jsx
 <Route path="/" element={<Login />} />
-<Route path="/register" element={<Register />} />
-<Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
-<Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+<Route path="/register" element={<PrivateRoute><Register /></PrivateRoute>} />
 <Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
+<Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+<Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
+<Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+<Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
 ```
 
 ---

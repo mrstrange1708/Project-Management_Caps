@@ -77,12 +77,12 @@ const Navbar = () => {
                 {isUserAuthenticated ? `Welcome, ${userdata.username}` : ''}
             </p>
             <div className='flex items-center gap-6'>
-                <button onClick={() => settheam(!theam)} className='hidden sm:block'>
+                <button onClick={() => settheam(!theam)}>
                     {theam ? <Moon size={32} className='text-white rounded-full' /> : <Sun size={32} />}
                 </button>
                 {isUserAuthenticated && (
                     <>
-                        <div className="relative hidden sm:block">
+                        <div className="relative">
                             <button onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                                 <BellRing />
                             </button>
@@ -102,7 +102,7 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
-                        <Link to="/profile" className='hidden sm:block'>
+                        <Link to="/profile">
                             <UserRoundPen />
                         </Link>
                     </>

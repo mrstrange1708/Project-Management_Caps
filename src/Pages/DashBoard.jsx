@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 const Dashboard = () => {
   const { theam } = useContext(TheamContext);
   const [projects, setProjects] = useState([]);
-  const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
+  const [pomodoroTime, setPomodoroTime] = useState(25 * 60); 
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -85,7 +85,7 @@ const Dashboard = () => {
     loadProjects();
   }, []);
 
-  // Pomodoro Timer functionality
+
   useEffect(() => {
     let interval;
     if (isTimerRunning && pomodoroTime > 0) {
@@ -128,10 +128,10 @@ const Dashboard = () => {
   const upcomingDeadlines = [...projects]
     .filter(project => new Date(project.deadline) > new Date())
     .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-    .slice(0, 5); // Show only next 5 deadlines
+    .slice(0, 5); 
 
   return (
-    <div className={`min-h-screen p-6 ${theam ? 'text-gray-200' : 'text-gray-800'} ml-[70px] md:ml-[80px]`}>
+    <div className={`min-h-screen p-6 ${theam ? 'text-gray-200' : 'text-gray-800'} md:ml-[80px] ml-0`}>
       <div className="absolute inset-0 -z-10 ml-[70px] md:ml-[80px]">
         <BackgroundAnimation />
       </div>

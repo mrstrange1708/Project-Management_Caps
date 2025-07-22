@@ -64,7 +64,7 @@ const About = () => {
   const cardStyle = `${glassCardStyle} ${theam ? darkThemeCardStyle : lightThemeCardStyle}`;
 
   return (
-    <div className={`w-full min-h-screen overflow-y-auto px-4 py-12 sm:px-6 lg:px-8 ${theam ? 'text-gray-200' : 'text-gray-800'}`}>
+    <div className={`w-full min-h-screen overflow-y-auto px-4 py-12 sm:px-6 lg:px-8 ${theam ? 'text-gray-200' : 'text-gray-800'} md:ml-[80px] ml-0`}>
       <div className="absolute inset-0 -z-10">
         <BackgroundAnimation />
       </div>

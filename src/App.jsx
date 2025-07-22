@@ -60,12 +60,12 @@ function App() {
                 <div className='mt-[70px]'>
                   <Routes>
                     <Route path="/" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/calender" element={<Calender />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/dashboard" element={<DashBoard />} />
+                    <Route path="/register" element={<PrivateRoute><Register /></PrivateRoute>} />
+                    <Route path="/calender" element={<PrivateRoute><Calender /></PrivateRoute>} />
+                    <Route path="/projects" element={<PrivateRoute><Projects /></PrivateRoute>} />
+                    <Route path="/dashboard" element={<PrivateRoute><DashBoard /></PrivateRoute>} />
                     <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-                    <Route path="/about" element={<About />} />
+                    <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
                   </Routes>
                 </div>
                 <Footer />
